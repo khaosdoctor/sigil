@@ -1,0 +1,12 @@
+{
+  "name": "sigil",
+  "version": "1.0.0",
+  "description": "Compressed memory format for Claude Code. Encodes behavioral rules, project context, references, and user info into token-efficient symbolic notation with ~4× compression at 100% decode accuracy.",
+  "author": {
+    "name": "Lucas Santos",
+    "url": "https://github.com/khaosdoctor"
+  },
+  "license": "MIT",
+  "keywords": ["memory", "compression", "tokens", "sigil"],
+  "skills": "./skills/"
+}
