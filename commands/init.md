@@ -11,6 +11,17 @@ One-time migration that converts all existing memory files into Sigil format.
 
 See the sigil-syntax.md reference file in the `remember` skill directory for the full format specification.
 
+## Backup
+
+Before saving the compressed memories on top of the user's memories, backup
+
+Keep the same structure as the original memory list.
+their memories to ~/.claude/backups/sigil/memories then, overwrite the memories
+with the sigil ones. Tell the user where the backup is and how they can restore
+it.
+
+Keep the same structure as the original memory list.
+
 ## Token Counting
 
 Use tiktoken (exact) with word-count fallback:
