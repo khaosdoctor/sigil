@@ -1,4 +1,6 @@
 ---
+user-invocable: true
+disable-model-invocation: true
 allowed-tools: Read(*), Edit(*), Write(*), Glob(*), Grep(*), Bash(uvx:*), Bash(wc:*), Bash(cat:*), Bash(rm:*)
 description: "Migrate all existing memory files to Sigil compressed format. Discovers, inventories, compresses, and cleans up memory across all scopes."
 ---
@@ -9,16 +11,11 @@ One-time migration that converts all existing memory files into Sigil format.
 
 ## Sigil Format
 
-See the sigil-syntax.md reference file in the `remember` skill directory for the full format specification.
+See the `sigil-syntax.md` reference file in the `remember` skill directory for the full format specification.
 
 ## Backup
 
-Before saving the compressed memories on top of the user's memories, backup
-
-Keep the same structure as the original memory list.
-their memories to ~/.claude/backups/sigil/memories then, overwrite the memories
-with the sigil ones. Tell the user where the backup is and how they can restore
-it.
+Before saving the compressed memories on top of the user's memories, backup their memories to `~/.claude/backups/sigil/memories` then overwrite the memories with the Sigil ones. Tell the user where the backup is and how they can restore it.
 
 Keep the same structure as the original memory list.
 

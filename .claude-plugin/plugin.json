@@ -6,7 +6,8 @@
     "name": "Lucas Santos",
     "url": "https://github.com/khaosdoctor"
   },
+  "homepage": "https://github.com/khaosdoctor/sigil",
+  "repository": "https://github.com/khaosdoctor/sigil",
   "license": "MIT",
-  "keywords": ["memory", "compression", "tokens", "sigil"],
-  "skills": "./skills/"
+  "keywords": ["memory", "compression", "tokens", "sigil"]
 }
