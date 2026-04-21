@@ -15,7 +15,7 @@ STY: give-todo+user-implements, 🚫workaround, 🚫tangent
 TSX: switch-default(x satisfies never), Record<Enum,T>
 ```
 
-sSigil is meant to be writable by humans but not necessarily readable. 
+Sigil is meant to be writable by humans but not necessarily readable. 
 
 ## Installation
 
