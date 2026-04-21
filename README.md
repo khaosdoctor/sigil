@@ -1,0 +1,125 @@
+# Sigil
+
+**This is a temporary readme because I didn't have time to write a proper one yet**
+
+> Sigil is a token-compressed memory format for Agents with up to 33x lossless compression (currently only tested in claude code). 
+
+It encodes behavioral rules, project context, references, and user preferences in ~8–16 tokens per entry (vs ~30 tokens in prose), with empirically validated 100% decode accuracy.
+
+**Format example:**
+```
+Legend: 🚫=never, ▸=prefer-over
+
+GIT: commit-single-m-flag, wrap(env -i), 🚫bg, 🌳worktree
+STY: give-todo+user-implements, 🚫workaround, 🚫tangent
+TSX: switch-default(x satisfies never), Record<Enum,T>
+```
+
+sSigil is meant to be writable by humans but not necessarily readable. 
+
+## Installation
+
+Copy three things into your Claude Code user directory (`~/.claude/`):
+
+### 1. Commands (slash commands)
+
+```bash
+mkdir -p ~/.claude/commands/sigil
+cp commands/init.md ~/.claude/commands/sigil/init.md
+cp commands/remember.md ~/.claude/commands/sigil/remember.md
+```
+
+### 2. Skill (syntax reference)
+
+```bash
+mkdir -p ~/.claude/skills/remember/references
+cp skills/remember/SKILL.md ~/.claude/skills/remember/SKILL.md
+cp skills/remember/references/sigil-syntax.md ~/.claude/skills/remember/references/sigil-syntax.md
+```
+
+### 3. Verify
+
+Restart Claude Code (or open a new session) and check that the commands are listed:
+
+```
+/sigil:remember    — save a memory in Sigil format
+/sigil:init        — migrate all existing memories to Sigil format
+```
+
+---
+
+## Usage
+
+### Save a memory
+
+```
+/sigil:remember never use let, always const
+```
+
+Or just describe it naturally:
+
+```
+/sigil:remember the API auth uses Bearer tokens from process.env.API_KEY
+```
+
+Claude compresses it into Sigil and appends to your `MEMORY.md`.
+
+### Migrate existing memories (one-time)
+
+```
+/sigil:init
+```
+
+Scans all your memory locations, shows a before/after compression table with token counts, waits for confirmation, then rewrites everything in Sigil format. Backs up originals to `~/.claude/backups/sigil/memories/` before overwriting.
+
+---
+
+## How it works
+
+Sigil uses a small set of symbolic operators on top of readable words:
+
+| Operator | Meaning | Example |
+|----------|---------|---------|
+| `🚫X` | never do X | `🚫mock-db` |
+| `A▸B` | prefer A over B | `Read▸paste` |
+| `verb(detail)` | do verb with specifics | `wrap(env -i)` |
+| `X→Y` | X leads to / causes Y | `auth-rewrite→compliance` |
+| `X@Y` | X at location Y | `pipeline-bugs@Linear(INGEST)` |
+| `X+Y` | X and Y | `give-todo+user-implements` |
+| `X∈Y` | X inside Y | `[[xlinks]]∈bullets` |
+
+Rules:
+- Always include a `Legend:` line — it's load-bearing for `▸`
+- Use 3-letter uppercase domain codes (GIT, STY, TSX, PRJ, REF, USR)
+- Keep words readable — vowel stripping kills accuracy
+- Use parenthetical examples for ambiguous rules: `switch-default(x satisfies never)` not just `satisfies-never`
+
+See `skills/remember/references/sigil-syntax.md` for the full reference.
+
+---
+
+## File locations after install
+
+```
+~/.claude/
+  commands/
+    sigil/
+      init.md        → /sigil:init
+      remember.md    → /sigil:remember
+  skills/
+    remember/
+      SKILL.md
+      references/
+        sigil-syntax.md
+```
+
+---
+
+## Background
+
+The format was developed through 14 rounds of compression experiments testing 37 subagent passes across 16 coding rules and 50 cross-domain rules. The winning format (Round 14A) achieves:
+
+- **3.9× compression** on technical rules (132 tokens vs 516 prose)
+- **100% decode accuracy** across all validation passes (zero errors in 406 total rule decodes)
+
+See `token-compression-experiment.md` for the full scientific log.
