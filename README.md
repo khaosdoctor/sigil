@@ -121,5 +121,3 @@ The format was developed through 14 rounds of compression experiments testing 37
 
 - **3.9× compression** on technical rules (132 tokens vs 516 prose)
 - **100% decode accuracy** across all validation passes (zero errors in 406 total rule decodes)
-
-See `token-compression-experiment.md` for the full scientific log.
