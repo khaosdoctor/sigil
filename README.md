@@ -17,7 +17,7 @@ TSX: switch-default(x satisfies never), Record<Enum,T>
 
 Sigil is meant to be writable by humans but not necessarily readable. 
 
-## Installation
+## Installation (Claude Code)
 
 Copy three things into your Claude Code user directory (`~/.claude/`):
 
@@ -48,67 +48,39 @@ Restart Claude Code (or open a new session) and check that the commands are list
 
 ---
 
-## Forge Integration
+## Forge Installation
 
-Forge is a terminal-based coding harness that's fully compatible with Sigil skills. Skills from Claude Code work directly in Forge without any conversion.
+<details>
+<summary><strong>Click to expand Forge installation</strong></summary>
 
-### How Forge Reads Memories
+Forge is fully compatible with Sigil skills — no conversion needed.
 
-Forge automatically reads these locations in order:
-
-| Priority | Path | Contents |
-|----------|------|----------|
-| 1 | `AGENTS.md` / `CLAUDE.md` | Global rules, user identity, tool preferences |
-| 2 | `~/.forge/memory/MEMORY.md` | Compressed Sigil memories (if exists) |
-| 3 | `.forge/projects/*/memory/MEMORY.md` | Project-specific memories |
-
-### Installation for Forge
-
-**Copy skills directly** (fully compatible with Claude Code):
+### Global skills (recommended)
 
 ```bash
-# Global skills (available across all projects)
 mkdir -p ~/forge/skills
 cp -r skills/remember ~/forge/skills/
+```
 
-# Optional: Create Sigil memory file
+### Project-specific skills
+
+```bash
+mkdir -p .forge/skills
+cp -r skills/remember .forge/skills/
+```
+
+### Verify installation
+
+Run `:skill` in Forge to see available skills.
+
+### Memory file (optional)
+
+```bash
 mkdir -p ~/forge/memory
 touch ~/forge/memory/MEMORY.md
 ```
 
-**Alternative: Project-specific skills:**
-
-```bash
-# In your project directory
-mkdir -p .forge/skills
-cp -r skills/remember .forge/skills/remember
-```
-
-### Forge Skills Locations
-
-```
-.forge/skills/<skill-name>/SKILL.md    ← Project skills (highest)
-~/.agents/skills/<skill-name>/SKILL.md ← Agent skills
-~/forge/skills/<skill-name>/SKILL.md   ← Global skills
-```
-
-### Verify Installation
-
-Run `:skill` in Forge to see available skills:
-
-```
-:skill
-```
-
-Look for `remember` and `init` skills.
-
-### Tips for Forge-Friendly Memories
-
-- **Use domain codes**: `GIT:`, `STY:`, `TSX:`, `PRJ:`, `REF:`, `USR:`
-- **Be specific**: `commit-single-m-flag` not `good-commits`
-- **Include examples**: `wrap(env -i)` not just `env-prefix`
-- **Use `Legend:` line**: Required for `▸` to decode correctly
-- **Keep AGENTS.md/CLAUDE.md updated**: Read first by Forge
+</details>
 
 ---
 
