@@ -50,21 +50,33 @@ Restart Claude Code (or open a new session) and check that the commands are list
 
 ## Forge/Agent Integration
 
-Agents like Forge can read your Sigil memories at session start to understand your preferences, patterns, and project context.
+Agents like Forge can read your Sigil memories to understand your preferences, patterns, and project context at session start.
 
-### How It Works
+### How Forge Reads Memories
 
-Forge automatically reads `~/.claude/memory/MEMORY.md` on session start if it exists. Your compressed memories are parsed and applied as behavioral context, reducing redundant explanations across sessions.
+Forge automatically reads these locations in order:
+
+| Priority | Path | Contents |
+|----------|------|----------|
+| 1 | `~/.claude/CLAUDE.md` | Global rules, user identity, tool preferences |
+| 2 | `~/.claude/memory/MEMORY.md` | Compressed Sigil memories (if exists) |
+| 3 | `~/.claude/projects/*/memory/MEMORY.md` | Project-specific memories |
+| 4 | `./.claude/memory/MEMORY.md` | Current workspace memories |
 
 ### Setup (for Forge)
 
-1. **Create global memory file:**
+1. **Ensure CLAUDE.md exists** (usually already present):
+   ```bash
+   ls ~/.claude/CLAUDE.md
+   ```
+
+2. **Optional: Create Sigil memory file:**
    ```bash
    mkdir -p ~/.claude/memory
    touch ~/.claude/memory/MEMORY.md
    ```
 
-2. **Add your preferences in Sigil format:**
+3. **Add preferences in Sigil format:**
    ```
    Legend: 🚫=never, ▸=prefer-over
 
@@ -73,7 +85,7 @@ Forge automatically reads `~/.claude/memory/MEMORY.md` on session start if it ex
    TSX: switch-default(x satisfies never), Record<Enum,T>
    ```
 
-3. **Use `/sigil:remember`** during sessions to add new entries:
+4. **Use `/sigil:remember`** during sessions to add new entries:
    ```
    /sigil:remember I prefer TypeScript strict mode enabled
    /sigil:remember 🚫use var, always const or let
@@ -84,11 +96,10 @@ Forge automatically reads `~/.claude/memory/MEMORY.md` on session start if it ex
 
 | Scope | Path | Contents |
 |-------|------|----------|
+| Global | `~/.claude/CLAUDE.md` | User identity, tool preferences, interaction style |
 | Global | `~/.claude/memory/MEMORY.md` | User preferences, cross-project rules |
 | Project | `~/.claude/projects/*/memory/MEMORY.md` | Project-specific context |
 | Session | `./.claude/memory/MEMORY.md` | Current project rules |
-
-Forge reads all available memory files at session start. Use the scope that makes sense for each entry.
 
 ### Tips for Agent-Friendly Memories
 
@@ -96,6 +107,7 @@ Forge reads all available memory files at session start. Use the scope that make
 - **Be specific**: `commit-single-m-flag` not `good-commits`
 - **Include examples**: `wrap(env -i)` not just `env-prefix`
 - **Use `Legend:` line**: Required for `▸` to decode correctly
+- **Keep CLAUDE.md updated**: This is read first by Forge
 
 ---
 
