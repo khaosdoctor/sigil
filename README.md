@@ -48,9 +48,9 @@ Restart Claude Code (or open a new session) and check that the commands are list
 
 ---
 
-## Forge/Agent Integration
+## Forge Integration
 
-Agents like Forge can read your Sigil memories to understand your preferences, patterns, and project context at session start.
+Forge is a terminal-based coding harness that's fully compatible with Sigil skills. Skills from Claude Code work directly in Forge without any conversion.
 
 ### How Forge Reads Memories
 
@@ -58,56 +58,57 @@ Forge automatically reads these locations in order:
 
 | Priority | Path | Contents |
 |----------|------|----------|
-| 1 | `~/.claude/CLAUDE.md` | Global rules, user identity, tool preferences |
-| 2 | `~/.claude/memory/MEMORY.md` | Compressed Sigil memories (if exists) |
-| 3 | `~/.claude/projects/*/memory/MEMORY.md` | Project-specific memories |
-| 4 | `./.claude/memory/MEMORY.md` | Current workspace memories |
+| 1 | `AGENTS.md` / `CLAUDE.md` | Global rules, user identity, tool preferences |
+| 2 | `~/.forge/memory/MEMORY.md` | Compressed Sigil memories (if exists) |
+| 3 | `.forge/projects/*/memory/MEMORY.md` | Project-specific memories |
 
-### Setup (for Forge)
+### Installation for Forge
 
-1. **Ensure CLAUDE.md exists** (usually already present):
-   ```bash
-   ls ~/.claude/CLAUDE.md
-   ```
+**Copy skills directly** (fully compatible with Claude Code):
 
-2. **Optional: Create Sigil memory file:**
-   ```bash
-   mkdir -p ~/.claude/memory
-   touch ~/.claude/memory/MEMORY.md
-   ```
+```bash
+# Global skills (available across all projects)
+mkdir -p ~/forge/skills
+cp -r skills/remember ~/forge/skills/
 
-3. **Add preferences in Sigil format:**
-   ```
-   Legend: 🚫=never, ▸=prefer-over
+# Optional: Create Sigil memory file
+mkdir -p ~/forge/memory
+touch ~/forge/memory/MEMORY.md
+```
 
-   GIT: commit-single-m-flag, wrap(env -i), 🚫bg, 🌳worktree
-   STY: give-todo+user-implements, 🚫workaround, 🚫tangent
-   TSX: switch-default(x satisfies never), Record<Enum,T>
-   ```
+**Alternative: Project-specific skills:**
 
-4. **Use `/sigil:remember`** during sessions to add new entries:
-   ```
-   /sigil:remember I prefer TypeScript strict mode enabled
-   /sigil:remember 🚫use var, always const or let
-   /sigil:remember API calls go in src/api/ folder
-   ```
+```bash
+# In your project directory
+mkdir -p .forge/skills
+cp -r skills/remember .forge/skills/remember
+```
 
-### Memory Locations (Priority Order)
+### Forge Skills Locations
 
-| Scope | Path | Contents |
-|-------|------|----------|
-| Global | `~/.claude/CLAUDE.md` | User identity, tool preferences, interaction style |
-| Global | `~/.claude/memory/MEMORY.md` | User preferences, cross-project rules |
-| Project | `~/.claude/projects/*/memory/MEMORY.md` | Project-specific context |
-| Session | `./.claude/memory/MEMORY.md` | Current project rules |
+```
+.forge/skills/<skill-name>/SKILL.md    ← Project skills (highest)
+~/.agents/skills/<skill-name>/SKILL.md ← Agent skills
+~/forge/skills/<skill-name>/SKILL.md   ← Global skills
+```
 
-### Tips for Agent-Friendly Memories
+### Verify Installation
+
+Run `:skill` in Forge to see available skills:
+
+```
+:skill
+```
+
+Look for `remember` and `init` skills.
+
+### Tips for Forge-Friendly Memories
 
 - **Use domain codes**: `GIT:`, `STY:`, `TSX:`, `PRJ:`, `REF:`, `USR:`
 - **Be specific**: `commit-single-m-flag` not `good-commits`
 - **Include examples**: `wrap(env -i)` not just `env-prefix`
 - **Use `Legend:` line**: Required for `▸` to decode correctly
-- **Keep CLAUDE.md updated**: This is read first by Forge
+- **Keep AGENTS.md/CLAUDE.md updated**: Read first by Forge
 
 ---
 
