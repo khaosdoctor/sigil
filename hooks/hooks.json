@@ -30,6 +30,17 @@
           }
         ]
       }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PreCompact\",\"additionalContext\":\"Before compacting: run /sigil:remember to persist any important decisions, corrections, or patterns from this session into compressed memory.\"}}'"
+          }
+        ]
+      }
     ]
   }
 }

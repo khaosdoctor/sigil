@@ -98,6 +98,53 @@ See `skills/remember/references/sigil-syntax.md` for the full reference.
 
 ---
 
+## Smart Hooks (optional but recommended)
+
+Two hooks that trigger Sigil at the right moments automatically.
+
+### Hook 1: PreCompact — save before context is lost
+
+Fires when you run `/compact`. Injects a message telling Claude to call `/sigil:remember` before the context window is cleared.
+
+### Hook 2: Context-aware checkpoint
+
+Fires after each Claude response. When context usage reaches 80%, shows a reminder to save session learnings.
+
+> **Note:** The checkpoint hook reads context usage from `/tmp/statusline-debug.json`. This file is written by a custom statusline command. If you don't have one configured, the hook exits silently.
+
+### Full hooks block for settings.json
+
+```json
+{
+  "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PreCompact\",\"additionalContext\":\"Before compacting: run /sigil:remember to persist any important decisions, corrections, or patterns from this session into compressed memory.\"}}'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/sigil-checkpoint.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+---
+
 ## File locations after install
 
 ```
@@ -111,6 +158,8 @@ See `skills/remember/references/sigil-syntax.md` for the full reference.
       SKILL.md
       references/
         sigil-syntax.md
+  hooks/
+    sigil-checkpoint.sh   → Stop hook (context-aware)
 ```
 
 ---
