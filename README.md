@@ -136,30 +136,76 @@ See `skills/remember/references/sigil-syntax.md` for the full reference.
 
 ## Smart Hooks (optional but recommended)
 
-Two hooks that trigger Sigil at the right moments automatically.
+Four hooks that trigger Sigil at the right moments automatically.
 
-### Hook 1: PreCompact — save before context is lost
+### Hook 1: PreCompact — context-aware save before compact
 
-Fires when you run `/compact`. Injects a message telling Claude to call `/sigil:remember` before the context window is cleared.
+Fires when you run `/compact`. Behavior varies by context usage:
 
-### Hook 2: Context-aware checkpoint
+| Context | Action |
+|---------|--------|
+| < 75% | Light reminder to save |
+| 75-89% | Warning to consider saving |
+| >= 90% | **Critical** — prompts to save before compact proceeds |
+
+The hook reads from `/tmp/statusline-debug.json`. If unavailable, falls back to light reminder.
+
+### Hook 2: PreCommit — memory check before git commits
+
+Suggests running `/sigil:remember` before committing, ensuring patterns and decisions are saved.
+
+### Hook 3: Context-aware checkpoint (Stop hook)
 
 Fires after each Claude response. When context usage reaches 80%, shows a reminder to save session learnings.
 
-> **Note:** The checkpoint hook reads context usage from `/tmp/statusline-debug.json`. This file is written by a custom statusline command. If you don't have one configured, the hook exits silently.
+### Hook 4: SessionStart — activate Sigil awareness
 
-### Full hooks block for settings.json
+Reminds Claude to use Sigil format for new memories at session start.
+
+### Full hooks configuration
 
 ```json
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/bin/session-start.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/bin/recall.sh"
+          }
+        ]
+      }
+    ],
     "PreCompact": [
       {
         "matcher": "manual",
         "hooks": [
           {
             "type": "command",
-            "command": "printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PreCompact\",\"additionalContext\":\"Before compacting: run /sigil:remember to persist any important decisions, corrections, or patterns from this session into compressed memory.\"}}'"
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/precompact.sh"
+          }
+        ]
+      }
+    ],
+    "PreCommit": [
+      {
+        "matcher": "manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/precommit.sh"
           }
         ]
       }
@@ -178,6 +224,8 @@ Fires after each Claude response. When context usage reaches 80%, shows a remind
   }
 }
 ```
+
+> **Note:** Checkpoint and PreCompact hooks read context usage from `/tmp/statusline-debug.json`. This file is written by a custom statusline command. If you don't have one configured, hooks fall back to safe defaults.
 
 ---
 

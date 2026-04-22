@@ -37,7 +37,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PreCompact\",\"additionalContext\":\"Before compacting: run /sigil:remember to persist any important decisions, corrections, or patterns from this session into compressed memory.\"}}'"
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/precompact.sh"
+          }
+        ]
+      }
+    ],
+    "PreCommit": [
+      {
+        "matcher": "manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/precommit.sh"
           }
         ]
       }
