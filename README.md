@@ -48,6 +48,57 @@ Restart Claude Code (or open a new session) and check that the commands are list
 
 ---
 
+## Forge/Agent Integration
+
+Agents like Forge can read your Sigil memories at session start to understand your preferences, patterns, and project context.
+
+### How It Works
+
+Forge automatically reads `~/.claude/memory/MEMORY.md` on session start if it exists. Your compressed memories are parsed and applied as behavioral context, reducing redundant explanations across sessions.
+
+### Setup (for Forge)
+
+1. **Create global memory file:**
+   ```bash
+   mkdir -p ~/.claude/memory
+   touch ~/.claude/memory/MEMORY.md
+   ```
+
+2. **Add your preferences in Sigil format:**
+   ```
+   Legend: 🚫=never, ▸=prefer-over
+
+   GIT: commit-single-m-flag, wrap(env -i), 🚫bg, 🌳worktree
+   STY: give-todo+user-implements, 🚫workaround, 🚫tangent
+   TSX: switch-default(x satisfies never), Record<Enum,T>
+   ```
+
+3. **Use `/sigil:remember`** during sessions to add new entries:
+   ```
+   /sigil:remember I prefer TypeScript strict mode enabled
+   /sigil:remember 🚫use var, always const or let
+   /sigil:remember API calls go in src/api/ folder
+   ```
+
+### Memory Locations (Priority Order)
+
+| Scope | Path | Contents |
+|-------|------|----------|
+| Global | `~/.claude/memory/MEMORY.md` | User preferences, cross-project rules |
+| Project | `~/.claude/projects/*/memory/MEMORY.md` | Project-specific context |
+| Session | `./.claude/memory/MEMORY.md` | Current project rules |
+
+Forge reads all available memory files at session start. Use the scope that makes sense for each entry.
+
+### Tips for Agent-Friendly Memories
+
+- **Use domain codes**: `GIT:`, `STY:`, `TSX:`, `PRJ:`, `REF:`, `USR:`
+- **Be specific**: `commit-single-m-flag` not `good-commits`
+- **Include examples**: `wrap(env -i)` not just `env-prefix`
+- **Use `Legend:` line**: Required for `▸` to decode correctly
+
+---
+
 ## Usage
 
 ### Save a memory
@@ -160,6 +211,16 @@ Fires after each Claude response. When context usage reaches 80%, shows a remind
         sigil-syntax.md
   hooks/
     sigil-checkpoint.sh   → Stop hook (context-aware)
+  memory/
+    MEMORY.md             → Global memory (read by agents)
+```
+
+### Agent Memory Hierarchy
+
+```
+~/.claude/memory/MEMORY.md           ← Global (user preferences)
+~/.claude/projects/*/memory/MEMORY.md ← Project-specific
+./.claude/memory/MEMORY.md           ← Current workspace
 ```
 
 ---
