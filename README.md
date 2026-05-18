@@ -1,7 +1,7 @@
 # Sigil
 
-> Sigil is a token-compressed memory format for AI coding agents — ~4×
-> lossless compression with 100% decode accuracy (validated across 14
+> Sigil is a token-compressed memory format for AI coding agents — up to
+> 50× lossless compression with 100% decode accuracy (validated across 14
 > rounds, 37 subagent passes).
 
 It encodes behavioral rules, project context, references, and user preferences in ~8–16 tokens per entry (vs ~30 tokens in prose).
@@ -248,5 +248,5 @@ exposes its own slash command — no duplicate `commands/` directory needed.
 
 The format was developed through 14 rounds of compression experiments testing 37 subagent passes across 16 coding rules and 50 cross-domain rules. The winning format (Round 14A) achieves:
 
-- **3.9× compression** on technical rules (132 tokens vs 516 prose)
+- **Up to 50× compression** on memory entries
 - **100% decode accuracy** across all validation passes (zero errors in 406 total rule decodes)

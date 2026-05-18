@@ -8,7 +8,7 @@
     {
       "name": "sigil",
       "source": "./plugins/sigil",
-      "description": "Compressed memory format for Claude Code. ~4× token compression at 100% decode accuracy."
+      "description": "Compressed memory format for Claude Code. Up to 50× token compression at 100% decode accuracy."
     }
   ]
 }
