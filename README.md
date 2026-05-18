@@ -1,12 +1,8 @@
 # Sigil
 
-> Sigil is a token-compressed memory format for AI coding agents — up to
-> 33× lossless compression with 100% decode accuracy (validated across 14
+> Sigil is a token-compressed memory format for AI coding agents — ~4×
+> lossless compression with 100% decode accuracy (validated across 14
 > rounds, 37 subagent passes).
-
-```bash
-curl -fsSL https://github.com/khaosdoctor/sigil/raw/main/install.sh | bash
-```
 
 It encodes behavioral rules, project context, references, and user preferences in ~8–16 tokens per entry (vs ~30 tokens in prose).
 
@@ -23,48 +19,20 @@ Sigil is meant to be writable by humans but not necessarily readable.
 
 ## Installation
 
-### Claude Code (recommended)
+### Claude Code
 
-Inside Claude Code, run these two slash commands:
-
-```
-/plugin marketplace add khaosdoctor/sigil
-/plugin install sigil@khaosdoctor/sigil
-```
-
-The first registers this repo as a plugin marketplace; the second installs
-Sigil from it. Updates are handled by Claude Code's plugin system — no
-manual reinstall needed.
-
-### Universal installer (other harnesses or manual install)
-
-For environments outside Claude Code, or if you prefer not to use the
-plugin system, run the interactive installer ([bash](https://www.gnu.org/software/bash/) +
-[gum](https://github.com/charmbracelet/gum)):
+Load Sigil as a plugin from a local clone:
 
 ```bash
-curl -fsSL https://github.com/khaosdoctor/sigil/raw/main/install.sh | bash
+git clone https://github.com/khaosdoctor/sigil.git
+claude --plugin-dir ./sigil
 ```
 
-Or after cloning:
-
-```bash
-./install.sh             # install
-./install.sh uninstall   # remove
-```
-
-Only `curl` is required — `gum` is auto-bootstrapped into a temporary
-directory when missing, so the host system stays untouched.
-
-The installer detects your installed agents and lets you pick where to place
-Sigil. **Today only Claude Code is fully supported.** OpenCode, Kilo Code,
-Pi Agent, Cursor, Windsurf, Gemini CLI, Codex and Goose are listed as
-"Coming soon" in the picker — visible but not selectable until each
-integration lands.
+Or point to the directory in your Claude Code settings.
 
 ### After install
 
-Restart your harness and the slash commands will be available:
+Restart Claude Code and the slash commands will be available:
 
 ```
 /sigil:remember    — save a memory in Sigil format
@@ -230,46 +198,38 @@ session closes.
 
 ---
 
-## File locations after install
+## Plugin structure
 
 ```
-~/.claude/
+sigil/
+  .claude-plugin/plugin.json          ← Plugin manifest
   skills/
     remember/
-      SKILL.md          → /sigil:remember
-      references/
-        sigil-syntax.md
-    init/SKILL.md       → /sigil:init
-    doctor/SKILL.md     → /sigil:doctor
-    purge/SKILL.md      → /sigil:purge
-    encode/SKILL.md     → /sigil:encode
-    decode/SKILL.md     → /sigil:decode
-    wrap-up/SKILL.md    → /sigil:wrap-up
+      SKILL.md                        → /sigil:remember
+      references/sigil-syntax.md      ← Canonical format spec
+    init/SKILL.md                     → /sigil:init
+    doctor/SKILL.md                   → /sigil:doctor
+    purge/SKILL.md                    → /sigil:purge
+    encode/SKILL.md                   → /sigil:encode
+    decode/SKILL.md                   → /sigil:decode
+    wrap-up/SKILL.md                  → /sigil:wrap-up
   hooks/
     hooks.json
-    precompact.sh         → PreCompact (tiered save prompt)
-    sigil-checkpoint.sh   → Stop (context-threshold reminder)
+    precompact.sh                     → PreCompact (tiered save prompt)
+    sigil-checkpoint.sh               → Stop (context-threshold reminder)
   bin/
-    session-start.sh      → SessionStart
-    recall.sh             → PreToolUse on Write/Edit
-    wrap-up.sh            → Stop (session-end nudge)
+    session-start.sh                  → SessionStart
+    recall.sh                         → PreToolUse on Write/Edit
+    wrap-up.sh                        → Stop (session-end nudge)
+  lib/
+    context.sh                        ← Shared context-usage reader
   src/
-    doctor.ts             → invoked by /sigil:doctor
-    purge.ts              → invoked by /sigil:purge
-  memory/
-    MEMORY.md             → Global memory (read by agents)
+    doctor.ts                         ← Invoked by /sigil:doctor
+    purge.ts                          ← Invoked by /sigil:purge
 ```
 
 Each skill in `skills/<name>/SKILL.md` has `user-invocable: true`, so it
 exposes its own slash command — no duplicate `commands/` directory needed.
-
-### Agent Memory Hierarchy
-
-```
-~/.claude/memory/MEMORY.md           ← Global (user preferences)
-~/.claude/projects/*/memory/MEMORY.md ← Project-specific
-./.claude/memory/MEMORY.md           ← Current workspace
-```
 
 ---
 

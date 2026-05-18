@@ -2,28 +2,11 @@
 # Smart PreCompact hook — context-aware memory persistence.
 # When context >= 90%, blocks /compact until memories are saved.
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../lib/context.sh"
+
 THRESHOLD_BLOCK=90
 THRESHOLD_WARN=75
-STATUSLINE="/tmp/statusline-debug.json"
-
-# Read context_window.used_percentage from the statusline file.
-# Prefers jq if available; falls back to a shell-pure parser so the hook
-# stays functional on minimal systems.
-read_ctx_pct() {
-  [ -f "$STATUSLINE" ] || { echo 0; return; }
-  local v=""
-  if command -v jq >/dev/null 2>&1; then
-    v=$(tail -1 "$STATUSLINE" 2>/dev/null \
-      | jq -r '.context_window.used_percentage // 0' 2>/dev/null)
-  else
-    v=$(tail -1 "$STATUSLINE" 2>/dev/null \
-      | grep -oE '"used_percentage"[[:space:]]*:[[:space:]]*[0-9.]+' \
-      | head -1 \
-      | grep -oE '[0-9.]+$')
-  fi
-  [ -z "$v" ] || [ "$v" = "null" ] && v=0
-  echo "$v"
-}
 
 CTX_PCT=$(read_ctx_pct)
 
