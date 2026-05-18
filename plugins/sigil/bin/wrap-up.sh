@@ -6,9 +6,6 @@ INPUT=$(cat)
 
 cat <<'EOF'
 {
-  "hookSpecificOutput": {
-    "hookEventName": "Stop"
-  },
   "systemMessage": "[Sigil] Session ending — run /sigil:wrap-up to capture anything worth keeping."
 }
 EOF

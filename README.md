@@ -36,7 +36,7 @@ For development or if you prefer a local copy:
 
 ```bash
 git clone https://github.com/khaosdoctor/sigil.git
-claude --plugin-dir ./sigil
+claude --plugin-dir ./sigil/plugins/sigil
 ```
 
 ### After install
@@ -207,34 +207,36 @@ session closes.
 
 ---
 
-## Plugin structure
+## Repository structure
 
 ```
 sigil/
-  .claude-plugin/plugin.json          ← Plugin manifest
-  skills/
-    remember/
-      SKILL.md                        → /sigil:remember
-      references/sigil-syntax.md      ← Canonical format spec
-    init/SKILL.md                     → /sigil:init
-    doctor/SKILL.md                   → /sigil:doctor
-    purge/SKILL.md                    → /sigil:purge
-    encode/SKILL.md                   → /sigil:encode
-    decode/SKILL.md                   → /sigil:decode
-    wrap-up/SKILL.md                  → /sigil:wrap-up
-  hooks/
-    hooks.json
-    precompact.sh                     → PreCompact (tiered save prompt)
-    sigil-checkpoint.sh               → Stop (context-threshold reminder)
-  bin/
-    session-start.sh                  → SessionStart
-    recall.sh                         → PreToolUse on Write/Edit
-    wrap-up.sh                        → Stop (session-end nudge)
-  lib/
-    context.sh                        ← Shared context-usage reader
-  src/
-    doctor.ts                         ← Invoked by /sigil:doctor
-    purge.ts                          ← Invoked by /sigil:purge
+  .claude-plugin/marketplace.json     ← Marketplace catalog
+  plugins/sigil/
+    .claude-plugin/plugin.json        ← Plugin manifest
+    skills/
+      remember/
+        SKILL.md                      → /sigil:remember
+        references/sigil-syntax.md    ← Canonical format spec
+      init/SKILL.md                   → /sigil:init
+      doctor/SKILL.md                 → /sigil:doctor
+      purge/SKILL.md                  → /sigil:purge
+      encode/SKILL.md                 → /sigil:encode
+      decode/SKILL.md                 → /sigil:decode
+      wrap-up/SKILL.md                → /sigil:wrap-up
+    hooks/
+      hooks.json
+      precompact.sh                   → PreCompact (tiered save prompt)
+      sigil-checkpoint.sh             → Stop (context-threshold reminder)
+    bin/
+      session-start.sh                → SessionStart
+      recall.sh                       → PreToolUse on Write/Edit
+      wrap-up.sh                      → Stop (session-end nudge)
+    lib/
+      context.sh                      ← Shared context-usage reader
+    src/
+      doctor.ts                       ← Invoked by /sigil:doctor
+      purge.ts                        ← Invoked by /sigil:purge
 ```
 
 Each skill in `skills/<name>/SKILL.md` has `user-invocable: true`, so it

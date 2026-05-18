@@ -10,18 +10,26 @@ The format is documented and empirically validated in `token-compression-experim
 
 ## Plugin Structure
 
-This repo *is* the plugin. It follows the Claude Code plugin layout:
+This repo is a marketplace containing the Sigil plugin under `plugins/sigil/`:
 
 ```
 sigil/
-├── .claude-plugin/plugin.json   ← Plugin manifest (name, version, author)
-└── skills/
-    ├── init/
-    │   └── SKILL.md             ← /sigil:init — user-invocable, model never auto-invokes
-    └── remember/
-        ├── SKILL.md             ← /sigil:remember — user-invocable AND model-invoked
-        └── references/
-            └── sigil-syntax.md  ← The canonical Sigil format specification
+├── .claude-plugin/marketplace.json  ← Marketplace catalog
+└── plugins/sigil/
+    ├── .claude-plugin/plugin.json   ← Plugin manifest (name, version, author)
+    ├── skills/
+    │   ├── init/SKILL.md
+    │   ├── remember/
+    │   │   ├── SKILL.md
+    │   │   └── references/sigil-syntax.md
+    │   ├── doctor/SKILL.md
+    │   ├── purge/SKILL.md
+    │   ├── encode/SKILL.md
+    │   ├── decode/SKILL.md
+    │   └── wrap-up/SKILL.md
+    ├── hooks/
+    ├── bin/
+    └── lib/
 ```
 
 Both skills use `user-invocable: true`. The `remember` skill also has `disable-model-invocation: false` so Claude auto-invokes it when detecting something worth saving. The `init` skill has `disable-model-invocation: true` — it only runs when explicitly invoked.
@@ -40,7 +48,7 @@ The format lives in `skills/remember/references/sigil-syntax.md`. The winning en
 
 Load locally with:
 ```bash
-claude --plugin-dir .
+claude --plugin-dir ./plugins/sigil
 ```
 
 Then try:
@@ -56,10 +64,11 @@ Reload changes during development without restarting:
 
 ## What Changes When Editing
 
-- **Format rules** → `skills/remember/references/sigil-syntax.md`
-- **`/sigil:remember` behavior or trigger description** → `skills/remember/SKILL.md`
-- **`/sigil:init` migration logic** → `skills/init/SKILL.md`
-- **Plugin metadata** → `.claude-plugin/plugin.json`
+- **Format rules** → `plugins/sigil/skills/remember/references/sigil-syntax.md`
+- **`/sigil:remember` behavior or trigger description** → `plugins/sigil/skills/remember/SKILL.md`
+- **`/sigil:init` migration logic** → `plugins/sigil/skills/init/SKILL.md`
+- **Plugin metadata** → `plugins/sigil/.claude-plugin/plugin.json`
+- **Marketplace catalog** → `.claude-plugin/marketplace.json`
 
 ## Empirical Constraints (from `token-compression-experiment.md`)
 
