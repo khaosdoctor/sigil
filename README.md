@@ -19,16 +19,25 @@ Sigil is meant to be writable by humans but not necessarily readable.
 
 ## Installation
 
-### Claude Code
+### Claude Code (marketplace)
 
-Load Sigil as a plugin from a local clone:
+Inside Claude Code, add the marketplace and install:
+
+```
+/plugin marketplace add khaosdoctor/sigil
+/plugin install sigil@khaosdoctor-sigil
+```
+
+Updates are automatic when you run `/plugin marketplace update khaosdoctor-sigil`.
+
+### Claude Code (local clone)
+
+For development or if you prefer a local copy:
 
 ```bash
 git clone https://github.com/khaosdoctor/sigil.git
 claude --plugin-dir ./sigil
 ```
-
-Or point to the directory in your Claude Code settings.
 
 ### After install
 

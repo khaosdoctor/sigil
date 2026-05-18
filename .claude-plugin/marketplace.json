@@ -1,0 +1,14 @@
+{
+  "name": "khaosdoctor-sigil",
+  "owner": {
+    "name": "Lucas Santos",
+    "url": "https://github.com/khaosdoctor"
+  },
+  "plugins": [
+    {
+      "name": "sigil",
+      "source": ".",
+      "description": "Compressed memory format for Claude Code. ~4× token compression at 100% decode accuracy."
+    }
+  ]
+}
