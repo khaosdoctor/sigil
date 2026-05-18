@@ -7,7 +7,7 @@ INPUT=$(cat)
 
 cat <<'EOF'
 {
-  "additionalContext": "[Sigil] Active. Any new memories must be saved in Sigil compressed format. Use /sigil:remember to save or /sigil:wrap-up at session end."
+  "additionalContext": "[Sigil] Active. Invoke /sigil:recall now to load project memories before doing anything else. Any new memories must be saved in Sigil compressed format. Use /sigil:remember to save or /sigil:wrap-up at session end."
 }
 EOF
 exit 0
