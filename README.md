@@ -25,10 +25,10 @@ Inside Claude Code, add the marketplace and install:
 
 ```
 /plugin marketplace add khaosdoctor/sigil
-/plugin install sigil@khaosdoctor-sigil
+/plugin install sigil@sigil
 ```
 
-Updates are automatic when you run `/plugin marketplace update khaosdoctor-sigil`.
+Updates are automatic when you run `/plugin marketplace update sigil`.
 
 ### Claude Code (local clone)
 
