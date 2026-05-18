@@ -1,6 +1,6 @@
 {
   "name": "sigil",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Compressed memory format for Claude Code. Encodes behavioral rules, project context, references, and user info into token-efficient symbolic notation with ~4× compression at 100% decode accuracy.",
   "author": {
     "name": "Lucas Santos",

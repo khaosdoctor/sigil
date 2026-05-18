@@ -1,13 +1,41 @@
 #!/usr/bin/env bash
-# SessionStart hook: inject Sigil-awareness reminder into the session.
-# Drain stdin so the parent pipe closes cleanly.
+# SessionStart hook: load project memories and inject Sigil context.
 INPUT=$(cat)
 [ "${SIGIL_DEBUG:-0}" = "1" ] && \
   echo "$(date) session-start fired, input: $INPUT" >> /tmp/sigil-hooks.log
 
-cat <<'EOF'
-{
-  "additionalContext": "[Sigil] Active. Invoke /sigil:recall now to load project memories before doing anything else. Any new memories must be saved in Sigil compressed format. Use /sigil:remember to save or /sigil:wrap-up at session end."
-}
-EOF
+# Find project memory by converting PWD to Claude's path-slug format
+PROJECT_SLUG=$(echo "$PWD" | sed 's|^/||; s|[/.]|-|g')
+PROJECT_MEMORY="$HOME/.claude/projects/-${PROJECT_SLUG}/memory/MEMORY.md"
+GLOBAL_MEMORY="$HOME/.claude/memory/MEMORY.md"
+LOCAL_MEMORY="$PWD/.claude/memory/MEMORY.md"
+
+MEMORIES=""
+
+for mem in "$PROJECT_MEMORY" "$LOCAL_MEMORY" "$GLOBAL_MEMORY"; do
+  if [ -f "$mem" ]; then
+    MEMORIES="${MEMORIES}--- ${mem} ---
+$(cat "$mem")
+
+"
+  fi
+done
+
+SIGIL_MSG="[Sigil] Active. Any new memories must be saved in Sigil compressed format. Use /sigil:remember to save or /sigil:wrap-up at session end."
+
+if [ -n "$MEMORIES" ]; then
+  FULL_MSG="[Sigil] Memories recalled. Internalize these silently — do not present them. Say only: Memories loaded.
+
+${MEMORIES}${SIGIL_MSG}"
+else
+  FULL_MSG="[Sigil] No memories found for this project. ${SIGIL_MSG}"
+fi
+
+# Use python3 to safely JSON-encode the message
+python3 -c "
+import json, sys
+msg = sys.stdin.read()
+print(json.dumps({'additionalContext': msg}))
+" <<< "$FULL_MSG"
+
 exit 0
