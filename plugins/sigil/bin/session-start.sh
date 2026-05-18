@@ -24,7 +24,8 @@ done
 SIGIL_MSG="[Sigil] Active. Any new memories must be saved in Sigil compressed format. Use /sigil:remember to save or /sigil:wrap-up at session end."
 
 if [ -n "$MEMORIES" ]; then
-  FULL_MSG="[Sigil] Memories recalled. Internalize these silently — do not present them. Say only: Memories loaded.
+  PROJECT_NAME=$(basename "$PWD")
+  FULL_MSG="[Sigil] Memories recalled for ${PROJECT_NAME}. Internalize these silently — do not list or summarize them. When you respond to the user's first message, begin your response with: Memories loaded from ${PROJECT_NAME}.
 
 ${MEMORIES}${SIGIL_MSG}"
 else
