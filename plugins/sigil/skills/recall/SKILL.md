@@ -1,5 +1,5 @@
 ---
-user-invocable: true
+user-invocable: false
 disable-model-invocation: false
 allowed-tools: Read(*), Glob(*), Grep(*), Bash(git:*), Bash(basename:*), Bash(realpath:*)
 description: "Silently load and internalize memories at session start. TRIGGER: beginning of a new conversation, or when the user says /recall, 'what do you remember', 'recall memories', or 'load context'. Invoke this ONCE at the very start of each session, before doing any work."
