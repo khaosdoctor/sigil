@@ -7,7 +7,10 @@
   "plugins": [
     {
       "name": "sigil",
-      "source": ".",
+      "source": {
+        "source": "github",
+        "repo": "khaosdoctor/sigil"
+      },
       "description": "Compressed memory format for Claude Code. ~4× token compression at 100% decode accuracy."
     }
   ]
