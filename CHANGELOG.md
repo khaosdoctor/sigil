@@ -5,6 +5,28 @@ All notable changes to the Sigil plugin are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- **Skills slimmed down (~51% fewer lines).** Most `SKILL.md` files now defer
+  work to a TypeScript script under `plugins/sigil/src/` instead of
+  orchestrating bash inline. Skill prose is shorter and unambiguous, and the
+  same script runs identically whether invoked via slash command or `npm run`.
+- `/sigil:stats` is now implemented in `src/stats.ts` (was inline bash in the
+  skill).
+- `/sigil:recall` and `/sigil:wrap-up` now load existing memory through the
+  new `src/dump-memories.ts` script in one call instead of multiple `Read`s.
+- `/sigil:init` delegates discovery/inventory to a `general-purpose` subagent
+  so the main context never holds raw memory dumps while planning the migration.
+
+### Added
+- `docs/COMMAND_FLOWS.md` — end-to-end flow diagram for every slash command,
+  showing which skill, TS script, and files each one touches.
+- `plugins/sigil/src/stats.ts` and `plugins/sigil/src/dump-memories.ts`.
+- `plugins/sigil/tests/stats.test.ts` — six integration tests covering both
+  new scripts (empty / single / multi-scope / sibling `.md` inlining).
+- `npm run stats` and `npm run dump-memories` scripts.
+
 ## [1.2.0] - 2026-05-19
 
 ### Added

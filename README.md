@@ -72,7 +72,7 @@ Restart Claude Code and the slash commands will be available:
 /sigil:wrap-up     — capture session learnings before the window closes
 ```
 
-See [`CHANGELOG.md`](./CHANGELOG.md) for release history, and [`SECURITY.md`](./SECURITY.md) for a detailed breakdown of what the plugin runs, reads, and writes.
+See [`docs/COMMAND_FLOWS.md`](./docs/COMMAND_FLOWS.md) for the end-to-end flow of each slash command, [`CHANGELOG.md`](./CHANGELOG.md) for release history, and [`SECURITY.md`](./SECURITY.md) for a detailed breakdown of what the plugin runs, reads, and writes.
 
 ---
 
@@ -275,9 +275,12 @@ sigil/
     src/
       doctor.ts                       ← Invoked by /sigil:doctor
       purge.ts                        ← Invoked by /sigil:purge
+      stats.ts                        ← Invoked by /sigil:stats
+      dump-memories.ts                ← Invoked by /sigil:recall and /sigil:wrap-up
     tests/
       doctor.test.ts                  ← Pure-logic tests for doctor
       purge.test.ts                   ← Pure-logic tests for purge
+      stats.test.ts                   ← Integration tests for stats and dump-memories
       memory-paths.test.ts            ← Tests for shared path helper
 ```
 

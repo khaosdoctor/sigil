@@ -24,9 +24,13 @@ sigil/
     │   │   └── references/sigil-syntax.md
     │   ├── doctor/SKILL.md
     │   ├── purge/SKILL.md
+    │   ├── stats/SKILL.md
+    │   ├── recall/SKILL.md
     │   ├── encode/SKILL.md
     │   ├── decode/SKILL.md
     │   └── wrap-up/SKILL.md
+    ├── src/                          ← TypeScript scripts invoked by skills
+    │   ├── doctor.ts / purge.ts / stats.ts / dump-memories.ts
     ├── hooks/
     ├── bin/
     └── lib/
@@ -67,6 +71,8 @@ Reload changes during development without restarting:
 - **Format rules** → `plugins/sigil/skills/remember/references/sigil-syntax.md`
 - **`/sigil:remember` behavior or trigger description** → `plugins/sigil/skills/remember/SKILL.md`
 - **`/sigil:init` migration logic** → `plugins/sigil/skills/init/SKILL.md`
+- **`/sigil:stats` output** → `plugins/sigil/src/stats.ts` (skill is a one-liner that invokes the TS)
+- **`/sigil:recall` / `/sigil:wrap-up` memory dump** → `plugins/sigil/src/dump-memories.ts`
 - **Plugin metadata** → `plugins/sigil/.claude-plugin/plugin.json`
 - **Marketplace catalog** → `.claude-plugin/marketplace.json`
 

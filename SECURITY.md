@@ -25,7 +25,7 @@ you, the source files are linked so you can verify each claim yourself.
   `~/.claude/backups/sigil/`. Destructive operations always back up
   first.
 - **Auditable.** The full runtime surface is 7 shell scripts (< 250 lines
-  total) and 2 TypeScript files (~250 lines total).
+  total) and 4 TypeScript files (~350 lines total).
 
 ---
 
@@ -112,10 +112,10 @@ only emit JSON to stdout.
 Each skill declares an explicit `allowed-tools` list in its frontmatter
 (see any `plugins/sigil/skills/*/SKILL.md`). Claude Code enforces these:
 if a skill tries to invoke a tool outside its allow-list, the user is
-prompted. Skills are intentionally narrow — e.g. `/sigil:doctor` only
-allows `Bash(*)` because it invokes the TS script, while `/sigil:stats`
-allows only `Bash(wc:*), Bash(find:*), Bash(cat:*)` and a few read-only
-file tools.
+prompted. Skills are intentionally narrow — `/sigil:doctor`, `/sigil:purge`,
+`/sigil:stats`, and `/sigil:recall` allow `Bash(*)` only to invoke the
+corresponding TS script under `plugins/sigil/src/`; `/sigil:encode` and
+`/sigil:decode` are pure transforms and allow only `Read(*)`.
 
 ---
 
@@ -125,7 +125,7 @@ The entire runtime surface, in order of importance:
 
 1. **Hooks (what runs automatically):** [`plugins/sigil/bin/`](plugins/sigil/bin/) and [`plugins/sigil/hooks/`](plugins/sigil/hooks/) — 5 shell scripts, ~150 lines total.
 2. **Shared helpers:** [`plugins/sigil/lib/`](plugins/sigil/lib/) — 3 small shell/TS modules for context reading and memory-path derivation.
-3. **Destructive commands:** [`plugins/sigil/src/doctor.ts`](plugins/sigil/src/doctor.ts) (read-only) and [`plugins/sigil/src/purge.ts`](plugins/sigil/src/purge.ts) (writes, with backups).
+3. **TypeScript scripts:** [`plugins/sigil/src/doctor.ts`](plugins/sigil/src/doctor.ts) (read-only), [`plugins/sigil/src/stats.ts`](plugins/sigil/src/stats.ts) (read-only), [`plugins/sigil/src/dump-memories.ts`](plugins/sigil/src/dump-memories.ts) (read-only), and [`plugins/sigil/src/purge.ts`](plugins/sigil/src/purge.ts) (writes, with backups).
 4. **Skills (model-driven instructions):** [`plugins/sigil/skills/`](plugins/sigil/skills/) — markdown instructions Claude follows for each slash command.
 5. **Tests:** [`plugins/sigil/tests/`](plugins/sigil/tests/) — `npm test` from `plugins/sigil/` runs them.
 
