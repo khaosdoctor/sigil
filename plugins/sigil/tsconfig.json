@@ -4,9 +4,9 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
-    "outDir": "dist",
-    "rootDir": "src",
-    "types": ["node"]
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
-  "include": ["src"]
+  "include": ["src", "tests"]
 }

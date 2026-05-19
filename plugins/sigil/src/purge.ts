@@ -1,11 +1,35 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } from "node:fs"
 import { homedir } from "node:os"
 import { join } from "node:path"
+import { fileURLToPath } from "node:url"
 
 const DOMAIN_RE = /^[A-Z]{3}:/
 const LEGEND_RE = /^Legend:/
 
 const dryRun = process.argv.includes("--dry-run")
+
+export function splitFrontmatter(raw: string): { frontmatter: string; body: string } {
+  const m = raw.match(/^(---[\s\S]*?---\n?)/)
+  const frontmatter = m?.[0] ?? ""
+  return { frontmatter, body: raw.slice(frontmatter.length) }
+}
+
+// The heart of purge — pure. Mirrors the EXACT current loop in purgeFile.
+export function purgeLines(lines: string[]): { kept: string[]; removed: string[] } {
+  const seenEntries: string[] = []
+  const removed: string[] = []
+  const kept: string[] = []
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith("#") || LEGEND_RE.test(trimmed) || trimmed.startsWith("<!--")) { kept.push(line); continue }
+    if (!DOMAIN_RE.test(trimmed)) { removed.push(`[no domain code] ${line}`); continue }
+    const entryBody = trimmed.replace(DOMAIN_RE, "").trim()
+    if (seenEntries.includes(entryBody)) { removed.push(`[duplicate] ${line}`); continue }
+    seenEntries.push(entryBody)
+    kept.push(line)
+  }
+  return { kept, removed }
+}
 
 function memoryPaths(): string[] {
   // leading / becomes - matching Claude's path-slug convention (equivalent to shell: sed 's|^/||; s|[/.]|-|g' then prepend -)
@@ -32,37 +56,10 @@ function purgeFile(path: string): void {
   console.log("─".repeat(60))
 
   const raw = readFileSync(path, "utf8")
-  const frontmatterMatch = raw.match(/^(---[\s\S]*?---\n?)/)
-  const frontmatter = frontmatterMatch?.[0] ?? ""
-  const body = raw.slice(frontmatter.length)
+  const { frontmatter, body } = splitFrontmatter(raw)
   const lines = body.split("\n")
 
-  const seenEntries: string[] = []
-  const removed: string[] = []
-  const kept: string[] = []
-
-  for (const line of lines) {
-    const trimmed = line.trim()
-
-    if (!trimmed || trimmed.startsWith("#") || LEGEND_RE.test(trimmed) || trimmed.startsWith("<!--")) {
-      kept.push(line)
-      continue
-    }
-
-    if (!DOMAIN_RE.test(trimmed)) {
-      removed.push(`[no domain code] ${line}`)
-      continue
-    }
-
-    const entryBody = trimmed.replace(DOMAIN_RE, "").trim()
-    if (seenEntries.includes(entryBody)) {
-      removed.push(`[duplicate] ${line}`)
-      continue
-    }
-
-    seenEntries.push(entryBody)
-    kept.push(line)
-  }
+  const { kept, removed } = purgeLines(lines)
 
   if (removed.length === 0) {
     console.log("Nothing to purge.")
@@ -91,4 +88,4 @@ function run() {
   for (const path of paths) purgeFile(path)
 }
 
-run()
+if (process.argv[1] === fileURLToPath(import.meta.url)) run()

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "doctor": "tsx src/doctor.ts"
+    "doctor": "tsx src/doctor.ts",
+    "test": "node --import tsx --test tests/*.test.ts"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

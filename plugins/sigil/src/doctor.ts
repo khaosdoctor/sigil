@@ -1,12 +1,45 @@
 import { readFileSync, existsSync } from "node:fs"
 import { homedir } from "node:os"
 import { join } from "node:path"
+import { fileURLToPath } from "node:url"
 
 const DOMAIN_RE = /^[A-Z]{3}:/
 const LEGEND_RE = /^Legend:/m
 
 type Severity = "ok" | "warn" | "fail"
 interface Finding { severity: Severity; message: string }
+
+export interface EntryAnalysis { bareProse: number[]; longEntries: number[]; duplicates: number[] }
+
+export function stripFrontmatter(raw: string): string {
+  return raw.replace(/^---[\s\S]*?---\n?/, "")
+}
+
+// Pure: just the regex extraction, no fs. Returns raw path strings found in @(...) where the path starts with ~ or /
+export function extractRefPaths(line: string): string[] {
+  const out: string[] = []
+  for (const m of line.matchAll(/@\(([~\/][^)]+)\)/g)) out.push(m[1])
+  return out
+}
+
+// Pure analysis of entry lines. Mirrors the EXACT current logic in checkFile.
+export function analyzeEntries(entryLines: string[]): EntryAnalysis {
+  const bareProse: number[] = []
+  const longEntries: number[] = []
+  const seenEntries: string[] = []
+  const duplicates: number[] = []
+  for (let i = 0; i < entryLines.length; i++) {
+    const line = entryLines[i].trim()
+    if (!line) continue
+    if (!DOMAIN_RE.test(line)) { bareProse.push(i + 1); continue }
+    const wordCount = line.split(/\s+/).length
+    if (Math.round(wordCount * 1.3) > 16) longEntries.push(i + 1)
+    const body = line.replace(DOMAIN_RE, "").trim()
+    if (seenEntries.includes(body)) duplicates.push(i + 1)
+    else seenEntries.push(body)
+  }
+  return { bareProse, longEntries, duplicates }
+}
 
 function memoryPaths(): string[] {
   // leading / becomes - matching Claude's path-slug convention (equivalent to shell: sed 's|^/||; s|[/.]|-|g' then prepend -)
@@ -24,8 +57,8 @@ function check(findings: Finding[], severity: Severity, message: string) {
 
 function findStalePaths(line: string): string[] {
   const stale: string[] = []
-  for (const m of line.matchAll(/@\(([~\/][^)]+)\)/g)) {
-    let p = m[1]
+  for (const raw of extractRefPaths(line)) {
+    let p = raw
     if (p.startsWith("~")) p = join(homedir(), p.slice(2))
     if (!existsSync(p)) stale.push(p)
   }
@@ -41,7 +74,7 @@ function checkFile(path: string): { findings: Finding[]; exists: boolean } {
 
   check(findings, "ok", "MEMORY.md found")
   const raw = readFileSync(path, "utf8")
-  const stripped = raw.replace(/^---[\s\S]*?---\n?/, "")
+  const stripped = stripFrontmatter(raw)
   const lines = stripped.split("\n")
 
   if (!LEGEND_RE.test(raw)) {
@@ -59,31 +92,12 @@ function checkFile(path: string): { findings: Finding[]; exists: boolean } {
       !l.startsWith("---"),
   )
 
-  const bareProse: number[] = []
-  const longEntries: number[] = []
-  const seenEntries: string[] = []
-  const duplicates: number[] = []
+  const { bareProse, longEntries, duplicates } = analyzeEntries(entryLines)
   const staleRefs: Array<{ line: number; path: string }> = []
 
   for (let i = 0; i < entryLines.length; i++) {
     const line = entryLines[i].trim()
-    if (!line) continue
-
-    if (!DOMAIN_RE.test(line)) {
-      bareProse.push(i + 1)
-      continue
-    }
-
-    const wordCount = line.split(/\s+/).length
-    if (Math.round(wordCount * 1.3) > 16) longEntries.push(i + 1)
-
-    const body = line.replace(DOMAIN_RE, "").trim()
-    if (seenEntries.includes(body)) {
-      duplicates.push(i + 1)
-    } else {
-      seenEntries.push(body)
-    }
-
+    if (!line || !DOMAIN_RE.test(line)) continue
     for (const p of findStalePaths(line)) {
       staleRefs.push({ line: i + 1, path: p })
     }
@@ -146,4 +160,4 @@ function run() {
   process.exit(totalErrors > 0 ? 1 : 0)
 }
 
-run()
+if (process.argv[1] === fileURLToPath(import.meta.url)) run()
