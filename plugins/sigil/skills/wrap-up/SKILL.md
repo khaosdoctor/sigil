@@ -1,36 +1,19 @@
 ---
 user-invocable: true
 disable-model-invocation: true
-allowed-tools: Read(*), Edit(*), Write(*), Glob(*), Grep(*), Bash(uvx:*), Bash(wc:*), Bash(cat:*)
+allowed-tools: Read(*), Edit(*), Write(*), Glob(*), Grep(*), Bash(*), Task(*)
 description: "Review the current session and save anything worth remembering long-term. Run at session end to capture feedback, decisions, project context, and references."
 ---
 
 # /sigil:wrap-up
 
-Review the full conversation so far and extract anything worth saving long-term.
+Extract anything worth keeping long-term from this session and save it.
 
-## Sigil Format
-
-See the `sigil-syntax.md` reference file in the `remember` skill directory for the full format specification.
+Format spec: `skills/remember/references/sigil-syntax.md`.
 
 ## Process
 
-1. Scan the conversation for items worth keeping long-term:
-   - Corrections or feedback the user gave ("don't do X", "prefer Y")
-   - Decisions made about the project (architecture, approach, constraints)
-   - References discovered (tools, URLs, file paths, external systems)
-   - Facts about the user's role, preferences, or environment
-
-2. Filter ruthlessly — skip anything:
-   - Already in memory (check the project, local, and global MEMORY.md files first — see `plugins/sigil/lib/memory-paths.sh::sigil_memory_paths`)
-   - Ephemeral (only relevant to this session's task)
-   - Derivable from the code or git history
-
-3. For each item worth saving, follow the `/sigil:remember` process:
-   - Compress to Sigil format
-   - Route to the correct section in MEMORY.md
-   - Check for duplicates before writing
-
-4. Report what was saved and what was skipped (and why).
-
-If nothing is worth saving, say so explicitly — that's a valid outcome.
+1. Load existing memory in one call: `${CLAUDE_PLUGIN_ROOT}/node_modules/.bin/tsx ${CLAUDE_PLUGIN_ROOT}/src/dump-memories.ts` (used to filter duplicates).
+2. Scan the conversation for: corrections/feedback, project decisions, references (tools/URLs/paths), user-role facts. Skip anything ephemeral, derivable from code/git, or already in memory.
+3. For each surviving item, apply the `/sigil:remember` process (compress, route, dedupe).
+4. Report saved + skipped (with reason). If nothing qualifies, say so — that's valid.

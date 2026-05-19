@@ -1,96 +1,40 @@
 ---
 user-invocable: true
 disable-model-invocation: true
-allowed-tools: Read(*), Edit(*), Write(*), Glob(*), Grep(*), Bash(uvx:*), Bash(wc:*), Bash(cat:*), Bash(rm:*)
+allowed-tools: Read(*), Edit(*), Write(*), Glob(*), Grep(*), Bash(wc:*), Bash(cat:*), Bash(rm:*), Bash(cp:*), Bash(mkdir:*), Task(*)
 description: "Migrate all existing memory files to Sigil compressed format. Discovers, inventories, compresses, and cleans up memory across all scopes."
 ---
 
 # /sigil:init — Migrate All Memories to Sigil
 
-One-time migration that converts all existing memory files into Sigil format.
+One-time migration: convert every existing memory file into Sigil format.
 
-## Sigil Format
+Format spec: `skills/remember/references/sigil-syntax.md`.
+Token estimate: `wc -w FILE` × 1.3.
 
-See the `sigil-syntax.md` reference file in the `remember` skill directory for the full format specification.
+## Step 1 — Delegate discovery (subagent)
 
-## Backup
+Spawn one `general-purpose` Agent with this prompt to keep the main context clean:
 
-Before saving the compressed memories on top of the user's memories, backup their memories to `~/.claude/backups/sigil/memories` then overwrite the memories with the Sigil ones. Tell the user where the backup is and how they can restore it.
+> Inventory every memory file under: `~/.claude/projects/*/memory/`, `./.claude/memory/`, and `~/.claude/memory/`. For each file: path, type (`feedback`/`project`/`reference`/`user`), word-count token estimate, and a draft Sigil one-liner per the format in `plugins/sigil/skills/remember/references/sigil-syntax.md`. Flag entries that are clearer in prose. Return a markdown table grouped by location with totals. Do not modify any files.
 
-Keep the same structure as the original memory list.
+## Step 2 — Backup
 
-## Token Counting
+Copy each discovered memory dir to `~/.claude/backups/sigil/memories/<timestamp>/` before any write. Tell the user the path.
 
-Use tiktoken (exact) with word-count fallback:
+## Step 3 — Show plan, wait for confirmation
 
-**Primary** — tiktoken via uvx:
-```bash
-uvx --with tiktoken python3 -c "
-import tiktoken,sys
-enc=tiktoken.get_encoding('cl100k_base')
-print(len(enc.encode(sys.stdin.read())))
-" < FILE
-```
+Present the subagent's table plus estimated savings. **Stop until the user confirms.**
 
-**Fallback** — if tiktoken/uvx unavailable:
-```bash
-echo $(( $(wc -w < FILE) * 13 / 10 ))
-```
-(word count × 1.3 ≈ BPE tokens, ~10% margin)
+## Step 4 — Execute
 
-Always report which method was used.
+Per location, build one `MEMORY.md` with sections:
+- `## Compressed Behavioral Rules` (feedback, grouped by 3-letter domain, with `Legend:`)
+- `## Project Context`, `## References`, `## User Context` (one-liners)
+- Manual-review entries kept as prose with `<!-- TODO: compress -->`
 
-## Step 1: Discover
+Delete absorbed files. Report final token count and ratio.
 
-Scan all memory locations:
-- **User scope**: `~/.claude/projects/*/memory/` (all project memory dirs)
-- **Project scope**: `.claude/memory/` in the current working directory
-- **Global scope**: `~/.claude/memory/` if it exists
+## Won't touch
 
-For each location, read `MEMORY.md` and all `.md` files linked from it or found in the directory.
-
-## Step 2: Inventory
-
-For each discovered memory file:
-1. Read contents
-2. Classify type: `feedback`, `project`, `reference`, or `user`
-3. Count tokens (using the token counting method above)
-4. Draft the Sigil-compressed version
-5. Flag entries where prose is genuinely clearer than symbolic form (for manual review)
-
-## Step 3: Present Plan
-
-Show the user a summary table:
-```
-Location: ~/.claude/projects/-Users-foo/memory/
-Files found: 12
-Current tokens: 1,847 (tiktoken)
-
-Proposed changes:
-  [feedback]  feedback_no_mocks.md (48 tok) → TST:🚫mock-db,integration-only (8 tok)
-  [project]   project_auth_rewrite.md (92 tok) → PRJ:auth-middleware→rewrite#compliance(session-token-storage) (12 tok)
-  [reference]  reference_linear.md (34 tok) → REF:pipeline-bugs@Linear(INGEST) (6 tok)
-  [manual]    project_complex_one.md (67 tok) → ⚠️ needs manual review
-
-Estimated savings: 1,847 → 312 tokens (5.9× compression)
-```
-
-**STOP and wait for user confirmation before proceeding.**
-
-## Step 4: Execute (after confirmation)
-
-1. Build the new MEMORY.md with all sections:
-   - `## Compressed Behavioral Rules` — feedback entries grouped by domain code with legend
-   - `## Project Context` — project entries as Sigil one-liners
-   - `## References` — reference entries as Sigil one-liners
-   - `## User Context` — user entries as Sigil one-liners
-   - Keep any entries flagged for manual review as prose with a `<!-- TODO: compress -->` comment
-2. Delete absorbed individual files
-3. Repeat for each memory location found in Step 1
-4. Report final token count per location and total compression ratio
-
-## What it won't do
-- Touch CLAUDE.md or any non-memory files
-- Delete files without showing them first
-- Compress anything flagged as genuinely clearer in prose (leaves for manual review)
-- Proceed without explicit user confirmation
+CLAUDE.md or non-memory files. Won't proceed without confirmation.

@@ -7,39 +7,24 @@ description: "Encode plain prose into Sigil compressed format without saving. Us
 
 # /sigil:encode
 
-Compress plain prose into Sigil format — preview only, nothing is saved.
+Compress the prose in `$ARGUMENTS` into Sigil — preview only, no writes.
 
-## Sigil Format
-
-See the `sigil-syntax.md` reference file in the `remember` skill directory for the full format specification.
-
-## Argument: $ARGUMENTS
-
-Encode the prose provided in `$ARGUMENTS` into Sigil format.
-
-## Token Counting
-
-Estimate only — no external calls:
-```bash
-echo $(( $(wc -w < FILE) * 13 / 10 ))
-```
-(word count × 1.3 ≈ BPE tokens)
+Format spec: `skills/remember/references/sigil-syntax.md`.
+Token estimate: word count × 1.3.
 
 ## Process
 
-1. Read `sigil-syntax.md` for the full format spec
-2. Determine the appropriate memory type: `feedback`, `project`, `reference`, or `user`
-3. Select or propose the correct 3-letter domain code
-4. Compress into Sigil notation following all writing rules
-5. Count tokens before and after using the method above
+1. Pick the memory type: `feedback` / `project` / `reference` / `user`.
+2. Pick or propose the 3-letter domain code.
+3. Compress per the format rules.
 
-## Output format
+## Output
 
 ```
-Input:   "Never mock the database in tests — we got burned when mocked tests passed but the prod migration failed"
+Input:   "Never mock the database in tests — we got burned when…"
 Type:    feedback
 Encoded: TST:🚫mock-db,integration-only
 Tokens:  ~18 → ~5 (-72%)
 ```
 
-Do not write to MEMORY.md. If the user wants to save the result, tell them to run `/sigil:remember` with the original prose.
+Do not write to MEMORY.md. To save, tell the user to run `/sigil:remember`.
