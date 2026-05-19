@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "doctor": "tsx src/doctor.ts",
+    "stats": "tsx src/stats.ts",
+    "dump-memories": "tsx src/dump-memories.ts",
     "test": "node --import tsx --test tests/*.test.ts"
   },
   "devDependencies": {
