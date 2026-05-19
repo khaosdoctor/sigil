@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-**Sigil** is a Claude Code plugin that provides a compressed memory format for encoding behavioral rules, project context, references, and user info into token-efficient symbolic notation. It achieves ~4× compression at 100% decode accuracy (validated across 14 rounds, 37 subagent tests).
+**Sigil** is a Claude Code plugin that provides a compressed memory format for encoding behavioral rules, project context, references, and user info into token-efficient symbolic notation. It achieves up to 50× compression at 100% decode accuracy (validated across 14 rounds, 37 subagent tests).
 
 The format is documented and empirically validated in `token-compression-experiment.md`.
 
@@ -36,7 +36,21 @@ sigil/
     └── lib/
 ```
 
-Both skills use `user-invocable: true`. The `remember` skill also has `disable-model-invocation: false` so Claude auto-invokes it when detecting something worth saving. The `init` skill has `disable-model-invocation: true` — it only runs when explicitly invoked.
+Every `skills/<name>/SKILL.md` ships with `user-invocable: true`, so each skill exposes its own `/sigil:<name>` slash command. The `remember` skill also sets `disable-model-invocation: false` so Claude auto-invokes it when it spots something worth saving. `init`, `doctor`, `purge`, `stats`, `encode`, `decode`, and `wrap-up` are user-invoked only; `recall` is model-invoked only (triggered silently at `SessionStart`).
+
+The full slash-command set is:
+
+- `/sigil:remember` — save one memory entry
+- `/sigil:init` — one-time migration of existing memories into Sigil
+- `/sigil:doctor` — read-only health check across all scopes
+- `/sigil:purge` — drop bare-prose / duplicate entries (with backup)
+- `/sigil:stats` — entry counts, token totals, domain breakdown
+- `/sigil:encode` — preview compression without saving
+- `/sigil:decode` — expand a Sigil snippet back into prose
+- `/sigil:wrap-up` — capture session learnings before context fills
+- `/sigil:recall` — silent loader (model-invoked at session start)
+
+See [`docs/COMMAND_FLOWS.md`](./docs/COMMAND_FLOWS.md) for the end-to-end flow of each command.
 
 ## The Sigil Format
 
@@ -71,10 +85,17 @@ Reload changes during development without restarting:
 - **Format rules** → `plugins/sigil/skills/remember/references/sigil-syntax.md`
 - **`/sigil:remember` behavior or trigger description** → `plugins/sigil/skills/remember/SKILL.md`
 - **`/sigil:init` migration logic** → `plugins/sigil/skills/init/SKILL.md`
-- **`/sigil:stats` output** → `plugins/sigil/src/stats.ts` (skill is a one-liner that invokes the TS)
+- **`/sigil:doctor` checks** → `plugins/sigil/src/doctor.ts`
+- **`/sigil:purge` rules / backup paths** → `plugins/sigil/src/purge.ts`
+- **`/sigil:stats` output** → `plugins/sigil/src/stats.ts`
+- **`/sigil:encode` and `/sigil:decode` prose** → `plugins/sigil/skills/encode/SKILL.md` and `plugins/sigil/skills/decode/SKILL.md`
 - **`/sigil:recall` / `/sigil:wrap-up` memory dump** → `plugins/sigil/src/dump-memories.ts`
+- **Shared MEMORY.md path resolution** → `plugins/sigil/lib/memory-paths.ts` (and `memory-paths.sh` for the hooks)
+- **Hooks (SessionStart, PreToolUse, PreCompact, Stop)** → `plugins/sigil/bin/*.sh` and `plugins/sigil/hooks/*.sh`
+- **Tests** → `plugins/sigil/tests/*.test.ts` (run with `npm test` from `plugins/sigil/`)
 - **Plugin metadata** → `plugins/sigil/.claude-plugin/plugin.json`
 - **Marketplace catalog** → `.claude-plugin/marketplace.json`
+- **Release notes** → `CHANGELOG.md`
 
 ## Empirical Constraints (from `token-compression-experiment.md`)
 

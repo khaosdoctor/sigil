@@ -5,7 +5,39 @@ All notable changes to the Sigil plugin are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.0] - 2026-05-19
+
+This is the first tagged GitHub release of the Sigil plugin. It folds together
+everything previously released as `v1.1.x` plus the post-`1.1.3` work that
+landed without a tag.
+
+### Added
+- **`/sigil:stats`** — new slash command that reports Sigil entry counts,
+  compressed-token totals, prose-equivalent estimates, and a breakdown by
+  domain code across every memory location.
+- **`/sigil:encode`** — preview-only command that compresses prose into Sigil
+  without touching any file, so users can try the format before saving.
+- **`/sigil:decode`** — inverse of encode; expands a Sigil snippet back into
+  plain prose for verification.
+- **`/sigil:wrap-up`** — end-of-session capture command that scans the
+  conversation for keepers and routes them through `/sigil:remember`.
+- **`/sigil:doctor`** — read-only health check across all memory scopes
+  (legend presence, bare-prose lines, duplicates, stale `@()` ref paths).
+- **`/sigil:purge` with automatic backup** — walks project / local / global
+  memory locations and writes a timestamped backup to
+  `~/.claude/backups/sigil/memories/` before rewriting any file.
+- **Shared path helper** — new `plugins/sigil/lib/memory-paths.ts` and
+  `plugins/sigil/lib/memory-paths.sh` centralise the `projectSlug` rules and
+  `MEMORY.md` location resolution previously duplicated between
+  `recall.sh`, `doctor.ts`, and `purge.ts`.
+- **First test suite** — `plugins/sigil/tests/` ships pure-logic and
+  integration tests for `doctor`, `purge`, `stats`, `dump-memories`, and the
+  shared path helper. `npm test` runs the suite via `node --import tsx --test`
+  with zero new runtime dependencies.
+- `docs/COMMAND_FLOWS.md` — end-to-end flow diagram for every slash command,
+  showing which skill, TS script, and files each one touches.
+- `plugins/sigil/src/stats.ts` and `plugins/sigil/src/dump-memories.ts`, plus
+  matching `npm run stats` / `npm run dump-memories` scripts.
 
 ### Changed
 - **Skills slimmed down (~51% fewer lines).** Most `SKILL.md` files now defer
@@ -17,34 +49,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/sigil:recall` and `/sigil:wrap-up` now load existing memory through the
   new `src/dump-memories.ts` script in one call instead of multiple `Read`s.
 - `/sigil:init` delegates discovery/inventory to a `general-purpose` subagent
-  so the main context never holds raw memory dumps while planning the migration.
-
-### Added
-- `docs/COMMAND_FLOWS.md` — end-to-end flow diagram for every slash command,
-  showing which skill, TS script, and files each one touches.
-- `plugins/sigil/src/stats.ts` and `plugins/sigil/src/dump-memories.ts`.
-- `plugins/sigil/tests/stats.test.ts` — six integration tests covering both
-  new scripts (empty / single / multi-scope / sibling `.md` inlining).
-- `npm run stats` and `npm run dump-memories` scripts.
-
-## [1.2.0] - 2026-05-19
-
-### Added
-- **`/sigil:stats`** — new slash command that reports Sigil entry counts,
-  compressed-token totals, prose-equivalent estimates, and a breakdown by
-  domain code across every memory location.
-- **`/sigil:purge` multi-scope support with automatic backup** — purge now
-  walks project / local / global memory locations and writes a timestamped
-  backup to `~/.claude/backups/sigil/memories/` before rewriting any file.
-- **`/sigil:doctor` multi-scope support** — doctor inspects all memory
-  locations in a single pass and reports per-scope health.
-- **Shared path helper** — new `plugins/sigil/lib/memory-paths.ts` and
-  `plugins/sigil/lib/memory-paths.sh` centralise the `projectSlug` rules and
-  `MEMORY.md` location resolution previously duplicated between
-  `recall.sh`, `doctor.ts`, and `purge.ts`.
-- **First test suite** — `plugins/sigil/tests/` ships pure-logic tests for
-  `doctor`, `purge`, and the new path helper. `npm test` runs 19 tests via
-  `node --import tsx --test` with zero new dependencies.
+  so the main context never holds raw memory dumps while planning the
+  migration.
+- `doctor.ts` and `purge.ts` now consume `lib/memory-paths.ts` instead of
+  computing slugs and paths inline.
+- `recall.sh` and `session-start.sh` source `lib/memory-paths.sh` for the
+  same logic in bash.
 
 ### Fixed
 - **`recall.sh` slug derivation** — leading `/` and embedded `.` characters
@@ -54,12 +64,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Wrap-up nudge threshold gating** — the `Stop` wrap-up hook now respects
   the context-usage threshold from `lib/context.sh` and stays silent on
   short sessions instead of firing on every response.
-
-### Changed
-- `doctor.ts` and `purge.ts` now consume `lib/memory-paths.ts` instead of
-  computing slugs and paths inline.
-- `recall.sh` and `session-start.sh` source `lib/memory-paths.sh` for the
-  same logic in bash.
 
 ## [1.1.3] - prior
 
