@@ -47,6 +47,7 @@ Restart Claude Code and the slash commands will be available:
 /sigil:remember    — save a memory in Sigil format
 /sigil:init        — migrate all existing memories to Sigil format
 /sigil:doctor      — diagnose memory health
+/sigil:stats       — show compression statistics across all memory locations
 ```
 
 ---
@@ -74,6 +75,15 @@ Claude compresses it into Sigil and appends to your `MEMORY.md`.
 ```
 
 Scans all your memory locations, shows a before/after compression table with token counts, waits for confirmation, then rewrites everything in Sigil format. Backs up originals to `~/.claude/backups/sigil/memories/` before overwriting.
+
+### Check compression stats
+
+```
+/sigil:stats
+```
+
+Shows how many Sigil entries exist across all memory locations, their compressed
+token count, estimated prose equivalent, and a breakdown by domain code.
 
 ---
 
