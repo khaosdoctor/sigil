@@ -9,6 +9,7 @@ type Severity = "ok" | "warn" | "fail"
 interface Finding { severity: Severity; message: string }
 
 function memoryPaths(): string[] {
+  // leading / becomes - matching Claude's path-slug convention (equivalent to shell: sed 's|^/||; s|[/.]|-|g' then prepend -)
   const slug = process.cwd().replace(/[/.]/g, "-")
   return [
     join(homedir(), ".claude", "projects", slug, "memory", "MEMORY.md"),

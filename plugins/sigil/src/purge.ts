@@ -8,6 +8,7 @@ const LEGEND_RE = /^Legend:/
 const dryRun = process.argv.includes("--dry-run")
 
 function memoryPaths(): string[] {
+  // leading / becomes - matching Claude's path-slug convention (equivalent to shell: sed 's|^/||; s|[/.]|-|g' then prepend -)
   const slug = process.cwd().replace(/[/.]/g, "-")
   return [
     join(homedir(), ".claude", "projects", slug, "memory", "MEMORY.md"),
