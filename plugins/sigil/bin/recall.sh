@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # PreToolUse hook (Write|Edit): surface project memory before edits.
 
-PROJECT_PATH=$(echo "$PWD" | sed 's|/|-|g' | sed 's|^-||')
-MEMORY="$HOME/.claude/projects/$PROJECT_PATH/memory/MEMORY.md"
+PROJECT_SLUG=$(echo "$PWD" | sed 's|^/||; s|[/.]|-|g')
+MEMORY="$HOME/.claude/projects/-${PROJECT_SLUG}/memory/MEMORY.md"
 
 if [ -f "$MEMORY" ]; then
   cat <<EOF
