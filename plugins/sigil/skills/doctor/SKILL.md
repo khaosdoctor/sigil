@@ -8,6 +8,9 @@ description: "Diagnose the health of Sigil memories. Checks format validity, dup
 # /sigil:doctor
 
 Run the Sigil diagnostics script and report the findings to the user verbatim.
+The script inspects all three memory scopes (project, local, and global) — see
+`plugins/sigil/lib/memory-paths.sh::sigil_memory_paths` for the canonical
+location list.
 
 ```bash
 ${CLAUDE_PLUGIN_ROOT}/node_modules/.bin/tsx ${CLAUDE_PLUGIN_ROOT}/src/doctor.ts

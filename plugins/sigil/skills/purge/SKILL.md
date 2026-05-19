@@ -7,7 +7,10 @@ description: "Remove invalid and duplicate entries from Sigil memory. Shows a dr
 
 # /sigil:purge
 
-Remove invalid entries (no domain code, duplicates) from MEMORY.md.
+Remove invalid entries (no domain code, duplicates) from every Sigil memory
+file. The script operates on all three scopes (project, local, and global) —
+see `plugins/sigil/lib/memory-paths.sh::sigil_memory_paths` for the canonical
+location list.
 
 ## Process
 

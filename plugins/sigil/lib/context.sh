@@ -16,6 +16,8 @@ read_ctx_pct() {
       | head -1 \
       | grep -oE '[0-9.]+$')
   fi
-  [ -z "$v" ] || [ "$v" = "null" ] && v=0
+  if [ -z "$v" ] || [ "$v" = "null" ]; then
+    v=0
+  fi
   echo "$v"
 }

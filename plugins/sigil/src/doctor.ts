@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from "node:fs"
 import { homedir } from "node:os"
 import { join } from "node:path"
 import { fileURLToPath } from "node:url"
+import { memoryLocations } from "../lib/memory-paths.ts"
 
 const DOMAIN_RE = /^[A-Z]{3}:/
 const LEGEND_RE = /^Legend:/m
@@ -15,14 +16,12 @@ export function stripFrontmatter(raw: string): string {
   return raw.replace(/^---[\s\S]*?---\n?/, "")
 }
 
-// Pure: just the regex extraction, no fs. Returns raw path strings found in @(...) where the path starts with ~ or /
 export function extractRefPaths(line: string): string[] {
   const out: string[] = []
   for (const m of line.matchAll(/@\(([~\/][^)]+)\)/g)) out.push(m[1])
   return out
 }
 
-// Pure analysis of entry lines. Mirrors the EXACT current logic in checkFile.
 export function analyzeEntries(entryLines: string[]): EntryAnalysis {
   const bareProse: number[] = []
   const longEntries: number[] = []
@@ -39,16 +38,6 @@ export function analyzeEntries(entryLines: string[]): EntryAnalysis {
     else seenEntries.push(body)
   }
   return { bareProse, longEntries, duplicates }
-}
-
-function memoryPaths(): string[] {
-  // leading / becomes - matching Claude's path-slug convention (equivalent to shell: sed 's|^/||; s|[/.]|-|g' then prepend -)
-  const slug = process.cwd().replace(/[/.]/g, "-")
-  return [
-    join(homedir(), ".claude", "projects", slug, "memory", "MEMORY.md"),
-    join(process.cwd(), ".claude", "memory", "MEMORY.md"),
-    join(homedir(), ".claude", "memory", "MEMORY.md"),
-  ]
 }
 
 function check(findings: Finding[], severity: Severity, message: string) {
@@ -145,18 +134,18 @@ function report(path: string, findings: Finding[], exists: boolean) {
 }
 
 function run() {
-  const paths = memoryPaths()
+  const locations = memoryLocations()
   let totalErrors = 0
   let totalWarnings = 0
 
-  for (const path of paths) {
-    const { findings, exists } = checkFile(path)
-    report(path, findings, exists)
+  for (const loc of locations) {
+    const { findings, exists } = checkFile(loc.path)
+    report(loc.path, findings, exists)
     totalErrors += findings.filter((f) => f.severity === "fail").length
     totalWarnings += findings.filter((f) => f.severity === "warn").length
   }
 
-  console.log(`\nTotal: ${totalErrors} error(s), ${totalWarnings} warning(s) across ${paths.length} location(s)`)
+  console.log(`\nTotal: ${totalErrors} error(s), ${totalWarnings} warning(s) across ${locations.length} location(s)`)
   process.exit(totalErrors > 0 ? 1 : 0)
 }
 

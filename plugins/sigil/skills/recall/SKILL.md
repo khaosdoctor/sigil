@@ -1,7 +1,7 @@
 ---
 user-invocable: false
 disable-model-invocation: false
-allowed-tools: Read(*), Glob(*), Grep(*), Bash(git:*), Bash(basename:*), Bash(realpath:*)
+allowed-tools: Read(*), Glob(*), Grep(*), Bash(git:*), Bash(basename:*), Bash(realpath:*), Bash(source:*), Bash(sigil_memory_paths:*)
 description: "Silently load and internalize memories at session start. TRIGGER: beginning of a new conversation, or when the user says /recall, 'what do you remember', 'recall memories', or 'load context'. Invoke this ONCE at the very start of each session, before doing any work."
 ---
 
@@ -28,16 +28,21 @@ git remote get-url origin 2>/dev/null
 
 ### Step 2: Discover memory locations
 
-Scan all memory locations that could contain relevant memories:
+Source `plugins/sigil/lib/memory-paths.sh` and call `sigil_memory_paths` to
+enumerate the three MEMORY.md locations for the current working directory:
 
-1. **Project-scoped memory** (highest relevance):
-   - `~/.claude/projects/*/memory/` — find the directory whose path-slug matches the current working directory
-   - `.claude/memory/` in the current working directory (if it exists)
+```bash
+source plugins/sigil/lib/memory-paths.sh
+sigil_memory_paths
+```
 
-2. **Global memory** (lower relevance):
-   - `~/.claude/memory/` (if it exists)
+This emits one path per line, in order: project-scoped
+(`~/.claude/projects/<project-slug>/memory/MEMORY.md`, highest relevance),
+local (`.claude/memory/MEMORY.md`), then global (`~/.claude/memory/MEMORY.md`,
+lower relevance).
 
-For each location, read `MEMORY.md` if present, and all `.md` files in the directory.
+For each location that exists, read `MEMORY.md` and any `.md` files in the
+same directory.
 
 ### Step 3: Decode and internalize
 

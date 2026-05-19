@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } from
 import { homedir } from "node:os"
 import { join } from "node:path"
 import { fileURLToPath } from "node:url"
+import { memoryLocations, type MemoryLocation } from "../lib/memory-paths.ts"
 
 const DOMAIN_RE = /^[A-Z]{3}:/
 const LEGEND_RE = /^Legend:/
@@ -14,7 +15,6 @@ export function splitFrontmatter(raw: string): { frontmatter: string; body: stri
   return { frontmatter, body: raw.slice(frontmatter.length) }
 }
 
-// The heart of purge — pure. Mirrors the EXACT current loop in purgeFile.
 export function purgeLines(lines: string[]): { kept: string[]; removed: string[] } {
   const seenEntries: string[] = []
   const removed: string[] = []
@@ -31,27 +31,18 @@ export function purgeLines(lines: string[]): { kept: string[]; removed: string[]
   return { kept, removed }
 }
 
-function memoryPaths(): string[] {
-  // leading / becomes - matching Claude's path-slug convention (equivalent to shell: sed 's|^/||; s|[/.]|-|g' then prepend -)
-  const slug = process.cwd().replace(/[/.]/g, "-")
-  return [
-    join(homedir(), ".claude", "projects", slug, "memory", "MEMORY.md"),
-    join(process.cwd(), ".claude", "memory", "MEMORY.md"),
-    join(homedir(), ".claude", "memory", "MEMORY.md"),
-  ].filter(existsSync)
-}
-
-function backup(path: string): void {
+function backup(location: MemoryLocation): void {
   const date = new Date().toISOString().slice(0, 10)
   const dir = join(homedir(), ".claude", "backups", "sigil", "purge", date)
   mkdirSync(dir, { recursive: true })
-  const encoded = path.replace(/[/.]/g, "-").replace(/^-+/, "")
-  const dest = join(dir, encoded)
-  copyFileSync(path, dest)
+  const encoded = location.path.replace(/[/.]/g, "-").replace(/^-+/, "")
+  const dest = join(dir, `${location.scope}-${encoded}`)
+  copyFileSync(location.path, dest)
   console.log(`  Backup saved to ${dest}`)
 }
 
-function purgeFile(path: string): void {
+function purgeFile(location: MemoryLocation): void {
+  const { path } = location
   console.log(`\nSigil Purge${dryRun ? " (dry run)" : ""} — ${path}`)
   console.log("─".repeat(60))
 
@@ -74,18 +65,18 @@ function purgeFile(path: string): void {
     return
   }
 
-  backup(path)
+  backup(location)
   writeFileSync(path, frontmatter + kept.join("\n"), "utf8")
   console.log("Done.")
 }
 
 function run() {
-  const paths = memoryPaths()
-  if (paths.length === 0) {
+  const locations = memoryLocations().filter(({ path }) => existsSync(path))
+  if (locations.length === 0) {
     console.error("No MEMORY.md files found.")
     process.exit(1)
   }
-  for (const path of paths) purgeFile(path)
+  for (const location of locations) purgeFile(location)
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) run()

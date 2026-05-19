@@ -39,6 +39,24 @@ git clone https://github.com/khaosdoctor/sigil.git
 claude --plugin-dir ./sigil/plugins/sigil
 ```
 
+### Development (running tests)
+
+The TypeScript scripts under `plugins/sigil/src/` ship with a small `node:test`
+suite. To run it:
+
+```bash
+cd plugins/sigil
+npm install
+npm test
+```
+
+This runs every `tests/*.test.ts` file via `tsx` — zero new dependencies beyond
+what `doctor`/`purge` already use. Coverage is reproducible with:
+
+```bash
+node --import tsx --test --experimental-test-coverage tests/*.test.ts
+```
+
 ### After install
 
 Restart Claude Code and the slash commands will be available:
@@ -47,8 +65,14 @@ Restart Claude Code and the slash commands will be available:
 /sigil:remember    — save a memory in Sigil format
 /sigil:init        — migrate all existing memories to Sigil format
 /sigil:doctor      — diagnose memory health
+/sigil:purge       — clean up duplicate / malformed entries (with backup)
 /sigil:stats       — show compression statistics across all memory locations
+/sigil:encode      — preview how prose would compress into Sigil (no save)
+/sigil:decode      — expand a Sigil snippet back into plain prose
+/sigil:wrap-up     — capture session learnings before the window closes
 ```
+
+See [`CHANGELOG.md`](./CHANGELOG.md) for release history, and [`SECURITY.md`](./SECURITY.md) for a detailed breakdown of what the plugin runs, reads, and writes.
 
 ---
 
@@ -231,9 +255,11 @@ sigil/
       init/SKILL.md                   → /sigil:init
       doctor/SKILL.md                 → /sigil:doctor
       purge/SKILL.md                  → /sigil:purge
+      stats/SKILL.md                  → /sigil:stats
       encode/SKILL.md                 → /sigil:encode
       decode/SKILL.md                 → /sigil:decode
       wrap-up/SKILL.md                → /sigil:wrap-up
+      recall/SKILL.md                 ← silent memory loader (model-invocable only)
     hooks/
       hooks.json
       precompact.sh                   → PreCompact (tiered save prompt)
@@ -244,9 +270,15 @@ sigil/
       wrap-up.sh                      → Stop (session-end nudge)
     lib/
       context.sh                      ← Shared context-usage reader
+      memory-paths.sh                 ← Shared slug + MEMORY.md path helper (bash)
+      memory-paths.ts                 ← Shared slug + MEMORY.md path helper (TS)
     src/
       doctor.ts                       ← Invoked by /sigil:doctor
       purge.ts                        ← Invoked by /sigil:purge
+    tests/
+      doctor.test.ts                  ← Pure-logic tests for doctor
+      purge.test.ts                   ← Pure-logic tests for purge
+      memory-paths.test.ts            ← Tests for shared path helper
 ```
 
 Each skill in `skills/<name>/SKILL.md` has `user-invocable: true`, so it

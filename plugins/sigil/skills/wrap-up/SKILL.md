@@ -22,7 +22,7 @@ See the `sigil-syntax.md` reference file in the `remember` skill directory for t
    - Facts about the user's role, preferences, or environment
 
 2. Filter ruthlessly — skip anything:
-   - Already in memory (check MEMORY.md first)
+   - Already in memory (check the project, local, and global MEMORY.md files first — see `plugins/sigil/lib/memory-paths.sh::sigil_memory_paths`)
    - Ephemeral (only relevant to this session's task)
    - Derivable from the code or git history
 

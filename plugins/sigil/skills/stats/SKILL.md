@@ -13,13 +13,18 @@ Show a compression summary across all Sigil memory locations.
 
 ### Step 1: Discover memory files
 
-Check these three locations (same as /sigil:doctor):
-- `~/.claude/projects/<project-slug>/memory/MEMORY.md` — project-scoped
-- `.claude/memory/MEMORY.md` — local (in current working directory)
-- `~/.claude/memory/MEMORY.md` — global
+Source `plugins/sigil/lib/memory-paths.sh` and call `sigil_memory_paths` to
+enumerate the three memory locations (project, local, global) for the current
+working directory:
 
-The project slug is derived from the current working directory by replacing
-every `/` and `.` with `-` (the leading `/` becomes a leading `-`).
+```bash
+source plugins/sigil/lib/memory-paths.sh
+sigil_memory_paths
+```
+
+This emits one path per line, in order: project-scoped
+(`~/.claude/projects/<project-slug>/memory/MEMORY.md`), local
+(`.claude/memory/MEMORY.md`), then global (`~/.claude/memory/MEMORY.md`).
 
 For each location, read the file if it exists. Skip locations that don't exist.
 

@@ -4,11 +4,12 @@ INPUT=$(cat)
 [ "${SIGIL_DEBUG:-0}" = "1" ] && \
   echo "$(date) session-start fired, input: $INPUT" >> /tmp/sigil-hooks.log
 
-# Find project memory by converting PWD to Claude's path-slug format
-PROJECT_SLUG=$(echo "$PWD" | sed 's|^/||; s|[/.]|-|g')
-PROJECT_MEMORY="$HOME/.claude/projects/-${PROJECT_SLUG}/memory/MEMORY.md"
-GLOBAL_MEMORY="$HOME/.claude/memory/MEMORY.md"
-LOCAL_MEMORY="$PWD/.claude/memory/MEMORY.md"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../lib/memory-paths.sh"
+
+PROJECT_MEMORY=$(sigil_project_memory_path)
+LOCAL_MEMORY=$(sigil_local_memory_path)
+GLOBAL_MEMORY=$(sigil_global_memory_path)
 
 MEMORIES=""
 
