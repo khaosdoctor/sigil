@@ -1,4 +1,5 @@
 ---
+name: encode
 user-invocable: true
 disable-model-invocation: false
 allowed-tools: Read(*)
