@@ -19,6 +19,21 @@ Sigil is meant to be writable by humans but not necessarily readable.
 
 ## Installation
 
+### Vercel Skills CLI
+
+Install with a single command — works with Claude Code, Cursor, GitHub Copilot,
+and [18+ other agents](https://skills.sh):
+
+```bash
+npx skills add khaosdoctor/sigil
+```
+
+To install a single skill:
+
+```bash
+npx skills add khaosdoctor/sigil --skill remember
+```
+
 ### Claude Code (marketplace)
 
 Inside Claude Code, add the marketplace and install:

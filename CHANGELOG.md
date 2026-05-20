@@ -5,6 +5,15 @@ All notable changes to the Sigil plugin are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-05-20
+
+### Added
+- Vercel Skills CLI installation support (`npx skills add khaosdoctor/sigil`)
+- Installation instructions for Vercel Skills in README
+
+### Changed
+- `name` field added to all SKILL.md frontmatter for Vercel Skills spec compliance
+
 ## [1.2.1] - 2026-05-19
 
 ### Changed
