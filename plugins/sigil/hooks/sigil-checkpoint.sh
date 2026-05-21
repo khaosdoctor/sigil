@@ -2,6 +2,7 @@
 # Stop hook: suggest /sigil:remember when context >= threshold.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export SIGIL_ROOT="${SIGIL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 source "$SCRIPT_DIR/../lib/context.sh"
 
 THRESHOLD=80

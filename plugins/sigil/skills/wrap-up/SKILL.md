@@ -14,7 +14,7 @@ Format spec: `skills/remember/references/sigil-syntax.md`.
 
 ## Process
 
-1. Load existing memory in one call: `${CLAUDE_PLUGIN_ROOT}/node_modules/.bin/tsx ${CLAUDE_PLUGIN_ROOT}/src/dump-memories.ts` (used to filter duplicates).
+1. Load existing memory in one call: `npm --prefix "${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}" run dump-memories` (used to filter duplicates).
 2. Scan the conversation for: corrections/feedback, project decisions, references (tools/URLs/paths), user-role facts. Skip anything ephemeral, derivable from code/git, or already in memory.
 3. For each surviving item, apply the `/sigil:remember` process (compress, route, dedupe).
 4. Report saved + skipped (with reason). If nothing qualifies, say so — that's valid.

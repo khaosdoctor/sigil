@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/bin/session-start.sh"
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/bin/session-start.sh"
           }
         ]
       }
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/bin/recall.sh"
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/bin/recall.sh"
           }
         ]
       }
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/precompact.sh"
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/precompact.sh"
           }
         ]
       }
@@ -37,12 +37,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/sigil-checkpoint.sh",
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/sigil-checkpoint.sh",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/bin/wrap-up.sh"
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/bin/wrap-up.sh"
           }
         ]
       }

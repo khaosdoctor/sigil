@@ -3,6 +3,7 @@
 # Only fires at >= 60% to avoid noise after every response.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export SIGIL_ROOT="${SIGIL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 source "$SCRIPT_DIR/../lib/context.sh"
 
 THRESHOLD=60

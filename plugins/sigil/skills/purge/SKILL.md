@@ -17,14 +17,14 @@ location list.
 
 1. Run dry run and show what would be removed:
 ```bash
-${CLAUDE_PLUGIN_ROOT}/node_modules/.bin/tsx ${CLAUDE_PLUGIN_ROOT}/src/purge.ts --dry-run
+npm --prefix "${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}" run purge:dry
 ```
 
 2. Show the output to the user and ask for confirmation before proceeding.
 
 3. If confirmed, run for real:
 ```bash
-${CLAUDE_PLUGIN_ROOT}/node_modules/.bin/tsx ${CLAUDE_PLUGIN_ROOT}/src/purge.ts
+npm --prefix "${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}" run purge
 ```
 
 4. Report the final output verbatim.

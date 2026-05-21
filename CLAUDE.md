@@ -62,6 +62,15 @@ The format lives in `skills/remember/references/sigil-syntax.md`. The winning en
 - A required `Legend:` line — without it, `▸` decodes wrong
 - Readable words only — vowel stripping destroys decode accuracy
 
+## Multi-Agent Compatibility
+
+All scripts and hooks use `SIGIL_ROOT` as the primary environment variable for
+locating the plugin directory, with `CLAUDE_PLUGIN_ROOT` as a fallback. This
+means Sigil works with any agent (Claude Code, Codex, Cursor, etc.) — set
+`SIGIL_ROOT` to `plugins/sigil/` and invoke scripts via `npm --prefix "$SIGIL_ROOT" run <command>`.
+
+Available npm scripts: `doctor`, `purge`, `purge:dry`, `stats`, `dump-memories`.
+
 ## Testing the Plugin
 
 Load locally with:

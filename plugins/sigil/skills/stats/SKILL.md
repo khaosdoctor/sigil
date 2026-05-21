@@ -9,7 +9,7 @@ description: "Show compression statistics for all Sigil memory files. Reports to
 # /sigil:stats
 
 ```bash
-${CLAUDE_PLUGIN_ROOT}/node_modules/.bin/tsx ${CLAUDE_PLUGIN_ROOT}/src/stats.ts
+npm --prefix "${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}" run stats
 ```
 
 Report the output verbatim.
