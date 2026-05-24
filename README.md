@@ -295,3 +295,10 @@ The format was developed through 14 rounds of compression experiments testing 37
 
 - **Up to 50× compression** on memory entries
 - **100% decode accuracy** across all validation passes (zero errors in 406 total rule decodes)
+
+## License and privacy
+
+Licensed under [Elastic License 2.0](./LICENSE) (source-available). You can use it, fork it, modify it, and distribute it. Two things you can't do: offer it as a hosted/managed service, or remove the licensing notices. I chose ELv2 over MIT because MIT permits repackaging the code as a competing closed-source SaaS, which I don't want to. ELv2 prevents that while keeping the source available to everyone.
+
+
+See [the security notice](./SECURITY.md) for privacy and security concerns.
