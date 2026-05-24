@@ -1,7 +1,7 @@
 # Sigil
 
-> Sigil is a token-compressed memory format for AI coding agents — up to
-> 50× lossless compression with 100% decode accuracy (validated across 14
+> Sigil is a token-compressed memory format for AI coding agents. It allows up to
+> 75% lossless compression with 100% decode accuracy (validated across 14
 > rounds, 37 subagent passes).
 
 It encodes behavioral rules, project context, references, and user preferences in ~8–16 tokens per entry (vs ~30 tokens in prose).
@@ -29,6 +29,8 @@ Inside Claude Code, add the marketplace and install:
 ```
 
 Updates are automatic when you run `/plugin marketplace update sigil`.
+
+> The plugin is in verification process in the official Anthropic marketplace
 
 ### Claude Code (local clone)
 
