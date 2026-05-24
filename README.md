@@ -295,7 +295,8 @@ exposes its own slash command — no duplicate `commands/` directory needed.
 
 The format was developed through 14 rounds of compression experiments testing 37 subagent passes across 16 coding rules and 50 cross-domain rules. The winning format (Round 14A) achieves:
 
-- **Up to 50× compression** on memory entries
+- **Up to 75% compression** on memory entries (depends on the type of memory and
+token repetition, but it's a rough estimate)
 - **100% decode accuracy** across all validation passes (zero errors in 406 total rule decodes)
 
 ## License and privacy
