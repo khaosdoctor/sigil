@@ -1,5 +1,5 @@
 ---
-name: decode
+name: sigil:decode
 user-invocable: true
 disable-model-invocation: false
 allowed-tools: Read(*)

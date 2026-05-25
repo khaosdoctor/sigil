@@ -1,5 +1,5 @@
 ---
-name: remember
+name: sigil:remember
 disable-model-invocation: false
 user-invocable: true
 allowed-tools: Read(*), Edit(*), Write(*), Glob(*), Grep(*), Bash(wc:*)
