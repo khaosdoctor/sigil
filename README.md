@@ -19,6 +19,21 @@ Sigil is meant to be writable by humans but not necessarily readable.
 
 ## Installation
 
+### Vercel Skills CLI
+
+Install with a single command — works with Claude Code, Cursor, GitHub Copilot,
+and [18+ other agents](https://skills.sh):
+
+```bash
+npx skills add khaosdoctor/sigil
+```
+
+To install a single skill:
+
+```bash
+npx skills add khaosdoctor/sigil --skill remember
+```
+
 ### Claude Code (marketplace)
 
 Inside Claude Code, add the marketplace and install:
@@ -75,6 +90,33 @@ Restart Claude Code and the slash commands will be available:
 ```
 
 See [`docs/COMMAND_FLOWS.md`](./docs/COMMAND_FLOWS.md) for the end-to-end flow of each slash command, [`CHANGELOG.md`](./CHANGELOG.md) for release history, and [`SECURITY.md`](./SECURITY.md) for a detailed breakdown of what the plugin runs, reads, and writes.
+
+### Multi-agent setup (Codex, Cursor, etc.)
+
+Sigil's scripts work with any agent that can run shell commands. Set the
+`SIGIL_ROOT` environment variable to the plugin directory:
+
+```bash
+export SIGIL_ROOT="/path/to/sigil/plugins/sigil"
+```
+
+Then invoke scripts via npm:
+
+```bash
+npm --prefix "$SIGIL_ROOT" run doctor
+npm --prefix "$SIGIL_ROOT" run stats
+npm --prefix "$SIGIL_ROOT" run purge:dry
+npm --prefix "$SIGIL_ROOT" run purge
+npm --prefix "$SIGIL_ROOT" run dump-memories
+```
+
+Claude Code sets `CLAUDE_PLUGIN_ROOT` automatically; `SIGIL_ROOT` takes
+precedence when both are defined. Agents that don't set either variable can
+still run the scripts directly:
+
+```bash
+cd plugins/sigil && npx tsx src/doctor.ts
+```
 
 ---
 
@@ -193,7 +235,7 @@ session closes.
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/bin/session-start.sh"
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/bin/session-start.sh"
           }
         ]
       }
@@ -204,7 +246,7 @@ session closes.
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/bin/recall.sh"
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/bin/recall.sh"
           }
         ]
       }
@@ -215,7 +257,7 @@ session closes.
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/precompact.sh"
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/precompact.sh"
           }
         ]
       }
@@ -225,12 +267,12 @@ session closes.
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/sigil-checkpoint.sh",
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/sigil-checkpoint.sh",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/bin/wrap-up.sh"
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/bin/wrap-up.sh"
           }
         ]
       }

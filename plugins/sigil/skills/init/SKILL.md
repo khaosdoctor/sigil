@@ -17,7 +17,7 @@ Token estimate: `wc -w FILE` × 1.3.
 
 Spawn one `general-purpose` Agent with this prompt to keep the main context clean:
 
-> Inventory every memory file at the locations emitted by `source ${CLAUDE_PLUGIN_ROOT}/lib/memory-paths.sh && sigil_memory_paths` (canonical scope list: project, local, global). For each file: path, type (`feedback`/`project`/`reference`/`user`), word-count token estimate, and a draft Sigil one-liner per the format in `${CLAUDE_PLUGIN_ROOT}/skills/remember/references/sigil-syntax.md`. Flag entries that are clearer in prose. Return a markdown table grouped by location with totals. Do not modify any files.
+> Inventory every memory file at the locations emitted by `source ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/lib/memory-paths.sh && sigil_memory_paths` (canonical scope list: project, local, global). For each file: path, type (`feedback`/`project`/`reference`/`user`), word-count token estimate, and a draft Sigil one-liner per the format in `${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/skills/remember/references/sigil-syntax.md`. Flag entries that are clearer in prose. Return a markdown table grouped by location with totals. Do not modify any files.
 
 ## Step 2 — Backup
 

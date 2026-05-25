@@ -5,6 +5,7 @@ INPUT=$(cat)
   echo "$(date) session-start fired, input: $INPUT" >> /tmp/sigil-hooks.log
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export SIGIL_ROOT="${SIGIL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 source "$SCRIPT_DIR/../lib/memory-paths.sh"
 
 PROJECT_MEMORY=$(sigil_project_memory_path)
