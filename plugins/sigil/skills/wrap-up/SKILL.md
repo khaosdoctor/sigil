@@ -1,5 +1,5 @@
 ---
-name: wrap-up
+name: sigil:wrap-up
 user-invocable: true
 disable-model-invocation: true
 allowed-tools: Read(*), Edit(*), Write(*), Glob(*), Grep(*), Bash(*), Task(*)

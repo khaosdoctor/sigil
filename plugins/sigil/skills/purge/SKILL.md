@@ -1,5 +1,5 @@
 ---
-name: purge
+name: sigil:purge
 user-invocable: true
 disable-model-invocation: true
 allowed-tools: Bash(*)

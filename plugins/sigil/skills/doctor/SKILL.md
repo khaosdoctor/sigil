@@ -1,5 +1,5 @@
 ---
-name: doctor
+name: sigil:doctor
 user-invocable: true
 disable-model-invocation: true
 allowed-tools: Bash(*)

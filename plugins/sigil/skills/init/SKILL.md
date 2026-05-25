@@ -1,5 +1,5 @@
 ---
-name: init
+name: sigil:init
 user-invocable: true
 disable-model-invocation: true
 allowed-tools: Read(*), Edit(*), Write(*), Glob(*), Grep(*), Bash(wc:*), Bash(cat:*), Bash(rm:*), Bash(cp:*), Bash(mkdir:*), Task(*)
