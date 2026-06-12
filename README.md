@@ -1,7 +1,7 @@
 # Sigil
 
-> Sigil is a token-compressed memory format for AI coding agents — up to
-> 50× lossless compression with 100% decode accuracy (validated across 14
+> Sigil is a token-compressed memory format for AI coding agents. It allows up to
+> 75% lossless compression with 100% decode accuracy (validated across 14
 > rounds, 37 subagent passes).
 
 It encodes behavioral rules, project context, references, and user preferences in ~8–16 tokens per entry (vs ~30 tokens in prose).
@@ -19,6 +19,21 @@ Sigil is meant to be writable by humans but not necessarily readable.
 
 ## Installation
 
+### Vercel Skills CLI
+
+Install with a single command — works with Claude Code, Cursor, GitHub Copilot,
+and [18+ other agents](https://skills.sh):
+
+```bash
+npx skills add khaosdoctor/sigil
+```
+
+To install a single skill:
+
+```bash
+npx skills add khaosdoctor/sigil --skill remember
+```
+
 ### Claude Code (marketplace)
 
 Inside Claude Code, add the marketplace and install:
@@ -29,6 +44,8 @@ Inside Claude Code, add the marketplace and install:
 ```
 
 Updates are automatic when you run `/plugin marketplace update sigil`.
+
+> The plugin is in verification process in the official Anthropic marketplace
 
 ### Claude Code (local clone)
 
@@ -73,6 +90,33 @@ Restart Claude Code and the slash commands will be available:
 ```
 
 See [`docs/COMMAND_FLOWS.md`](./docs/COMMAND_FLOWS.md) for the end-to-end flow of each slash command, [`CHANGELOG.md`](./CHANGELOG.md) for release history, and [`SECURITY.md`](./SECURITY.md) for a detailed breakdown of what the plugin runs, reads, and writes.
+
+### Multi-agent setup (Codex, Cursor, etc.)
+
+Sigil's scripts work with any agent that can run shell commands. Set the
+`SIGIL_ROOT` environment variable to the plugin directory:
+
+```bash
+export SIGIL_ROOT="/path/to/sigil/plugins/sigil"
+```
+
+Then invoke scripts via npm:
+
+```bash
+npm --prefix "$SIGIL_ROOT" run doctor
+npm --prefix "$SIGIL_ROOT" run stats
+npm --prefix "$SIGIL_ROOT" run purge:dry
+npm --prefix "$SIGIL_ROOT" run purge
+npm --prefix "$SIGIL_ROOT" run dump-memories
+```
+
+Claude Code sets `CLAUDE_PLUGIN_ROOT` automatically; `SIGIL_ROOT` takes
+precedence when both are defined. Agents that don't set either variable can
+still run the scripts directly:
+
+```bash
+cd plugins/sigil && npx tsx src/doctor.ts
+```
 
 ---
 
@@ -191,7 +235,7 @@ session closes.
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/bin/session-start.sh"
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/bin/session-start.sh"
           }
         ]
       }
@@ -202,7 +246,7 @@ session closes.
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/bin/recall.sh"
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/bin/recall.sh"
           }
         ]
       }
@@ -213,7 +257,7 @@ session closes.
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/precompact.sh"
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/precompact.sh"
           }
         ]
       }
@@ -223,12 +267,12 @@ session closes.
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/sigil-checkpoint.sh",
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/sigil-checkpoint.sh",
             "timeout": 5
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/bin/wrap-up.sh"
+            "command": "bash ${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}/bin/wrap-up.sh"
           }
         ]
       }
@@ -293,5 +337,13 @@ exposes its own slash command — no duplicate `commands/` directory needed.
 
 The format was developed through 14 rounds of compression experiments testing 37 subagent passes across 16 coding rules and 50 cross-domain rules. The winning format (Round 14A) achieves:
 
-- **Up to 50× compression** on memory entries
+- **Up to 75% compression** on memory entries (depends on the type of memory and
+token repetition, but it's a rough estimate)
 - **100% decode accuracy** across all validation passes (zero errors in 406 total rule decodes)
+
+## License and privacy
+
+Licensed under [Elastic License 2.0](./LICENSE) (source-available). You can use it, fork it, modify it, and distribute it. Two things you can't do: offer it as a hosted/managed service, or remove the licensing notices. I chose ELv2 over MIT because MIT permits repackaging the code as a competing closed-source SaaS, which I don't want to. ELv2 prevents that while keeping the source available to everyone.
+
+
+See [the security notice](./SECURITY.md) for privacy and security concerns.

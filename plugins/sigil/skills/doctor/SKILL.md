@@ -1,4 +1,5 @@
 ---
+name: sigil:doctor
 user-invocable: true
 disable-model-invocation: true
 allowed-tools: Bash(*)
@@ -13,7 +14,7 @@ The script inspects all three memory scopes (project, local, and global) — see
 location list.
 
 ```bash
-${CLAUDE_PLUGIN_ROOT}/node_modules/.bin/tsx ${CLAUDE_PLUGIN_ROOT}/src/doctor.ts
+npm --prefix "${SIGIL_ROOT:-${CLAUDE_PLUGIN_ROOT}}" run doctor
 ```
 
 Report the full output without modification.

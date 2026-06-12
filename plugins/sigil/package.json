@@ -1,9 +1,11 @@
 {
   "name": "sigil",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "type": "module",
   "scripts": {
     "doctor": "tsx src/doctor.ts",
+    "purge": "tsx src/purge.ts",
+    "purge:dry": "tsx src/purge.ts --dry-run",
     "stats": "tsx src/stats.ts",
     "dump-memories": "tsx src/dump-memories.ts",
     "test": "node --import tsx --test tests/*.test.ts"

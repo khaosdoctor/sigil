@@ -1,14 +1,16 @@
 {
   "name": "sigil",
+  "description": "Lossless compression format for Agent memories. Up to 75% compression with 100% decode accuracy",
   "owner": {
     "name": "Lucas Santos",
-    "url": "https://github.com/khaosdoctor"
+    "url": "https://github.com/khaosdoctor/sigil"
   },
   "plugins": [
     {
       "name": "sigil",
       "source": "./plugins/sigil",
-      "description": "Compressed memory format for Claude Code. Up to 50× token compression at 100% decode accuracy."
+      "description": "Compressed memory format for Claude Code. Up to 75% token compression at 100% decode accuracy.",
+      "homepage": "https://github.com/khaosdoctor/sigil"
     }
   ]
 }

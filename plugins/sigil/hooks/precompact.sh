@@ -3,6 +3,7 @@
 # When context >= 90%, blocks /compact until memories are saved.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export SIGIL_ROOT="${SIGIL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 source "$SCRIPT_DIR/../lib/context.sh"
 
 THRESHOLD_BLOCK=90

@@ -2,6 +2,7 @@
 # PreToolUse hook (Write|Edit): surface project memory before edits.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export SIGIL_ROOT="${SIGIL_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 source "$SCRIPT_DIR/../lib/memory-paths.sh"
 
 MEMORY=$(sigil_project_memory_path)
