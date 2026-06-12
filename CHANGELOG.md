@@ -5,6 +5,17 @@ All notable changes to the Sigil plugin are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2026-06-12
+
+### Fixed
+- PreCompact hook no longer emits `hookSpecificOutput.additionalContext`, which
+  is unsupported for `PreCompact` and caused every `/compact` to fail hook
+  output validation. It now blocks via top-level `decision` and surfaces
+  reminders via `systemMessage`.
+- `read_ctx_pct` sanitizes its return to a strict numeric value before it is
+  interpolated into hook JSON, preventing a malformed statusline value from
+  re-breaking the hook.
+
 ## [1.2.2] - 2026-05-20
 
 ### Added
