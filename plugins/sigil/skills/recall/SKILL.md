@@ -1,5 +1,4 @@
 ---
-name: sigil:recall
 user-invocable: false
 disable-model-invocation: false
 allowed-tools: Bash(*)

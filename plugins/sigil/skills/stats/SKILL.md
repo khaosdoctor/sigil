@@ -1,5 +1,4 @@
 ---
-name: sigil:stats
 user-invocable: true
 disable-model-invocation: true
 allowed-tools: Bash(*)

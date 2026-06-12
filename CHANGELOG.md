@@ -5,6 +5,16 @@ All notable changes to the Sigil plugin are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.4] - 2026-06-12
+
+### Fixed
+- Removed the `name` field from every skill's `SKILL.md` frontmatter. For plugin
+  skills, Claude Code derives the slash command from the plugin name plus the
+  skill directory (`/sigil:remember`); a `name` field bypasses that and caused
+  each `/sigil:*` command to register twice. The namespaced value (`sigil:remember`)
+  was also invalid under the Vercel Skills spec, which requires
+  `^[a-z0-9]+(-[a-z0-9]+)*$`, so it served neither platform.
+
 ## [1.2.3] - 2026-06-12
 
 ### Fixed
