@@ -16,7 +16,10 @@ read_ctx_pct() {
       | head -1 \
       | grep -oE '[0-9.]+$')
   fi
-  if [ -z "$v" ] || [ "$v" = "null" ]; then
+  # Guarantee a clean numeric value: callers interpolate this straight into
+  # JSON, so anything non-numeric (quotes, newlines, "null", empty) must
+  # collapse to 0 to avoid emitting invalid JSON.
+  if ! printf '%s' "$v" | grep -qE '^[0-9]+(\.[0-9]+)?$'; then
     v=0
   fi
   echo "$v"
